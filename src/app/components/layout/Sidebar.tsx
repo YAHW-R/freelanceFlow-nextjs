@@ -1,0 +1,112 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+    LayoutDashboard,
+    FolderKanban,
+    ListTodo,
+    Users,
+    FileText,
+    AreaChart,
+    Bot,
+    Settings,
+    ChevronLeft,
+    ChevronRight,
+} from 'lucide-react';
+
+// Definimos la estructura de cada item de navegación
+const navItems = [
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/dashboard/projects', label: 'Proyectos', icon: FolderKanban },
+    { href: '/dashboard/tasks', label: 'Tareas', icon: ListTodo },
+    { href: '/dashboard/clients', label: 'Clientes', icon: Users },
+    { href: '/dashboard/invoices', label: 'Facturas', icon: FileText },
+    { href: '/dashboard/metrics', label: 'Métricas', icon: AreaChart },
+];
+
+const secondaryNavItems = [
+    { href: '/dashboard/ai-assistant', label: 'Asistente IA', icon: Bot },
+    { href: '/dashboard/settings', label: 'Configuración', icon: Settings },
+];
+
+export default function Sidebar() {
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const pathname = usePathname();
+
+    const toggleSidebar = () => setIsCollapsed(!isCollapsed);
+
+    return (
+        <nav
+            className={`relative flex h-screen flex-col bg-gray-900 text-white shadow-xl transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'
+                }`}
+        >
+            {/* Botón para colapsar/expandir */}
+            <button
+                onClick={toggleSidebar}
+                className="absolute -right-3 top-8 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-gray-700 text-white hover:bg-cyan-600 focus:outline-none"
+            >
+                {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            </button>
+
+            {/* Logo y Título */}
+            <div className="flex h-20 items-center px-6">
+                <Bot size={32} className="text-cyan-400" />
+                {!isCollapsed && (
+                    <span className="ml-3 text-xl font-bold animate-fade-in">FreelanceFlow</span>
+                )}
+            </div>
+
+            {/* Navegación Principal */}
+            <div className="flex-1 overflow-y-auto">
+                <ul className="space-y-2 px-4">
+                    {navItems.map((item) => {
+                        const isActive = pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard');
+                        return (
+                            <li key={item.href}>
+                                <Link
+                                    href={item.href}
+                                    className={`flex items-center rounded-lg p-3 transition-colors duration-200
+                    ${isActive
+                                            ? 'bg-cyan-600/30 text-white'
+                                            : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                        }
+                  `}
+                                >
+                                    <item.icon size={20} />
+                                    {!isCollapsed && (
+                                        <span className="ml-4 font-medium animate-fade-in-left">
+                                            {item.label}
+                                        </span>
+                                    )}
+                                </Link>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
+
+            {/* Navegación Secundaria */}
+            <div className="border-t border-gray-700 p-4">
+                <ul className="space-y-2">
+                    {secondaryNavItems.map((item) => (
+                        <li key={item.href}>
+                            <Link
+                                href={item.href}
+                                className="flex items-center rounded-lg p-3 text-gray-400 transition-colors duration-200 hover:bg-gray-800 hover:text-white"
+                            >
+                                <item.icon size={20} />
+                                {!isCollapsed && (
+                                    <span className="ml-4 font-medium animate-fade-in-left">
+                                        {item.label}
+                                    </span>
+                                )}
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </nav>
+    );
+}

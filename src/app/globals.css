@@ -3,6 +3,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #00BCD4;
+  --secondary: #F4F6F8;
+  --green-acent: #4CAF50;
+  --red-acent: #F44336;
 }
 
 @theme inline {
@@ -16,6 +20,10 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --primary: #00BCD4;
+    --secondary: #F4F6F8;
+    --green-acent: #4CAF50;
+    --red-acent: #F44336;
   }
 }
 

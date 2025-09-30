@@ -147,9 +147,6 @@ Te propongo un **diseño moderno tipo SaaS**:
    * Suscripción premium.
    * Reportes avanzados con gráficas.
 
----
-
-¡Claro! 🚀 Te hago un desglose más detallado de cada paso del **roadmap de desarrollo** para tu aplicación de gestión de proyectos en **Next.js**.
 
 ---
 

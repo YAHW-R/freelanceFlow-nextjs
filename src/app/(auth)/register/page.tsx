@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Bot } from 'lucide-react';
+import IconApp from '@/app/components/icons/IconApp.svg';
 
 export default function RegisterPage() {
     const [email, setEmail] = useState<string>('');
@@ -55,16 +55,16 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md animate-fade-in-down">
+        <div className="w-full max-w-md rounded-lg bg-background-secondary p-8 shadow-md animate-fade-in-down">
             <div className="mb-6 flex flex-col items-center">
-                <Bot size={48} className="text-cyan-600 mb-2" />
-                <h2 className="text-3xl font-bold text-gray-900">Crear Cuenta</h2>
-                <p className="mt-2 text-gray-600">Únete a FreelanceFlow para gestionar tus proyectos</p>
+                <IconApp size={48} className="text-primary mb-2" />
+                <h2 className="text-3xl font-bold text-foreground">Crear Cuenta</h2>
+                <p className="mt-2 text-foreground-secondary">Únete a FreelanceFlow para gestionar tus proyectos</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="email" className="block text-sm font-medium text-foreground">
                         Correo Electrónico
                     </label>
                     <input
@@ -74,12 +74,12 @@ export default function RegisterPage() {
                         value={email}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                         required
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm p-2"
+                        className="mt-1 block w-full rounded-md border-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2"
                     />
                 </div>
 
                 <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="password" className="block text-sm font-medium text-foreground">
                         Contraseña
                     </label>
                     <input
@@ -89,12 +89,12 @@ export default function RegisterPage() {
                         value={password}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                         required
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm p-2"
+                        className="mt-1 block w-full rounded-md border-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2"
                     />
                 </div>
 
                 <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground">
                         Confirmar Contraseña
                     </label>
                     <input
@@ -104,27 +104,27 @@ export default function RegisterPage() {
                         value={confirmPassword}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
                         required
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm p-2"
+                        className="mt-1 block w-full rounded-md border-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2"
                     />
                 </div>
 
                 {error && (
-                    <p className="text-sm text-red-600 animate-fade-in">{error}</p>
+                    <p className="text-sm text-secondary animate-fade-in">{error}</p>
                 )}
 
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full rounded-md border border-transparent bg-cyan-600 py-2 px-4 text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full rounded-md border border-transparent bg-primary py-2 px-4 text-sm font-medium text-foreground shadow-sm transition-colors duration-200 hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary-hover focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isLoading ? 'Registrando...' : 'Registrarse'}
                 </button>
             </form>
 
             <div className="mt-6 text-center text-sm">
-                <p className="text-gray-600">
+                <p className="text-foreground-secondary">
                     ¿Ya tienes una cuenta?{' '}
-                    <Link href="/login" className="font-medium text-cyan-600 hover:text-cyan-500">
+                    <Link href="/login" className="font-medium text-primary hover:text-primary-hover">
                         Inicia Sesión
                     </Link>
                 </p>

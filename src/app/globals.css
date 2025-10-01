@@ -1,14 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --background-secondary: #f9f9f9;
-  --foreground: #171717;
-  --foreground-secondary: #555555;
-  --primary: #00BCD4;
-  --secondary: #F4F6F8;
-  --green-acent: #4CAF50;
-  --red-acent: #F44336;
+  --background: #E5E7EB;
+  --background-secondary: #FFFFFF;
+  --foreground: #111827;
+  --foreground-secondary: #374151;
+  --primary: #312E81;
+  --primary-hover: #4338CA;
+  --primary-active: #1E1B4B;
+  --secondary: #EC4899;
+  --secundary-hover: #F472B6;
+  --secundary-active: #DB2777;
 }
 
 @theme inline {
@@ -17,23 +19,27 @@
   --color-foreground: var(--foreground);
   --color-foreground-secondary: var(--foreground-secondary);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
   --color-secondary: var(--secondary);
-  --color-green-acent: var(--green-acent);
-  --color-red-acent: var(--red-acent);
+  --color-secondary-hover: var(--secundary-hover);
+  --color-secondary-active: var(--secundary-active);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --background-secondary: #1a1a1a;
-    --foreground: #ededed;
-    --foreground-secondary: #aaaaaa;
-    --primary: #00BCD4;
-    --secondary: #F4F6F8;
-    --green-acent: #4CAF50;
-    --red-acent: #F44336;
+    --background: #1F2937;
+    --background-secondary: #111827;
+    --foreground: #F3F4F6;
+    --foreground-secondary: #D1D5DB;
+    --primary: #4338CA;
+    --primary-hover: #4F46E5;
+    --primary-active: #3730A3;
+    --secondary: #BE185D;
+    --secundary-hover: #EC4899;
+    --secundary-active: #9D174D;
   }
 }
 

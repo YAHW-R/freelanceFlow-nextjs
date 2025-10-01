@@ -11,11 +11,11 @@ const config: Config = {
     theme: {
         extend: {
             keyframes: {
-                'fade-in': {
+                'fade-in-a': {
                     '0%': { opacity: '0' },
                     '100%': { opacity: '1' },
                 },
-                'fade-in-down': {
+                'fade-in-down-a': {
                     '0%': {
                         opacity: '0',
                         transform: 'translateY(-20px)',
@@ -25,7 +25,7 @@ const config: Config = {
                         transform: 'translateY(0)',
                     },
                 },
-                'fade-in-left': {
+                'fade-in-left-a': {
                     '0%': {
                         opacity: '0',
                         transform: 'translateX(-20px)',
@@ -35,16 +35,27 @@ const config: Config = {
                         transform: 'translateX(0)',
                     },
                 },
-                'subtle-pulse': {
+                'subtle-pulse-a': {
                     '0%, 100%': { transform: 'scale(1)' },
                     '50%': { transform: 'scale(1.05)' },
                 },
-            },
-            animation: {
-                'fade-in': 'fade-in 0.3s ease-in-out',
-                'fade-in-down': 'fade-in-down 0.5s ease-in-out',
-                'fade-in-left': 'fade-in-left 0.5s ease-in-out',
-                'subtle-pulse': 'subtle-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                'fade-in-up-a': {
+                    '0%': {
+                        opacity: '0',
+                        transform: 'translateY(20px)',
+                    },
+                    '100%': {
+                        opacity: '1',
+                        transform: 'translateY(0)',
+                    },
+                },
+                animation: {
+                    'fade-in': 'fade-in-a 0.3s ease-in-out',
+                    'fade-in-up': 'fade-in-up-a 0.5s ease-in-out',
+                    'fade-in-down': 'fade-in-down-a 0.5s ease-in-out',
+                    'fade-in-left': 'fade-in-left-a 0.5s ease-in-out',
+                    'subtle-pulse': 'subtle-pulse-a 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                },
             },
         },
     },

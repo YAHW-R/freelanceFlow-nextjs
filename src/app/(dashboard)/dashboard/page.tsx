@@ -74,14 +74,14 @@ export default function DashboardPage() {
                 <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-left">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold text-foreground">Proyectos en Progreso</h2>
-                        <Link href="/dashboard/projects" className="text-sm font-medium text-cyan-600 hover:underline">
+                        <Link href="/dashboard/projects" className="text-sm font-medium text-primary hover:underline">
                             Ver Todos
                         </Link>
                     </div>
                     <ul className="mt-4 space-y-4">
                         {mockProjects.filter(p => p.status === 'En Progreso' || p.status === 'Pendiente').map(project => (
                             <li key={project.id} className="border-b border-foreground-secondary pb-4 last:border-b-0 last:pb-0">
-                                <Link href={`/dashboard/projects/${project.id}`} className="block hover:text-cyan-600 transition-colors duration-200">
+                                <Link href={`/dashboard/projects/${project.id}`} className="block hover:text-primary-hover transition-colors duration-200">
                                     <h3 className="text-lg font-medium text-foreground">{project.name}</h3>
                                 </Link>
                                 <p className="text-sm text-foreground-secondary">Cliente: {project.clientName}</p>
@@ -89,7 +89,7 @@ export default function DashboardPage() {
                                     <span className="text-foreground-secondary">Progreso: {project.progress}%</span>
                                     <div className="h-1.5 w-1/2 rounded-full bg-foreground">
                                         <div
-                                            className="h-full rounded-full bg-cyan-500 transition-all duration-500"
+                                            className="h-full rounded-full bg-primary transition-all duration-500"
                                             style={{ width: `${project.progress}%` }}
                                         ></div>
                                     </div>
@@ -104,7 +104,7 @@ export default function DashboardPage() {
                 <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-left delay-100">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold text-foreground">Mis Tareas</h2>
-                        <Link href="/dashboard/tasks" className="text-sm font-medium text-cyan-600 hover:underline">
+                        <Link href="/dashboard/tasks" className="text-sm font-medium text-primary hover:underline">
                             Ver Todas
                         </Link>
                     </div>
@@ -114,14 +114,14 @@ export default function DashboardPage() {
                                 <input
                                     type="checkbox"
                                     id={`task-${task.id}`}
-                                    className="h-4 w-4 rounded border-foreground-secondary text-cyan-600 focus:ring-cyan-500"
+                                    className="h-4 w-4 rounded border-foreground-secondary text-primary focus:ring-primary-hover"
                                 // checked={task.status === 'Completado'} // Aquí integrarías la lógica de estado
                                 // onChange={() => toggleTaskStatus(task.id)}
                                 />
                                 <label htmlFor={`task-${task.id}`} className="ml-3 text-sm font-medium text-foreground">
                                     {task.title} <span className="text-foreground-secondary">({task.project})</span>
                                 </label>
-                                <span className={`ml-auto text-xs font-semibold ${task.dueDate === 'Hoy' ? 'text-red-500' : 'text-gray-500'}`}>
+                                <span className={`ml-auto text-xs font-semibold ${task.dueDate === 'Hoy' ? 'text-secondary' : 'text-foreground-secondary'}`}>
                                     {task.dueDate}
                                 </span>
                             </li>

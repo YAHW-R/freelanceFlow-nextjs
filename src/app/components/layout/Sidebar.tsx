@@ -16,6 +16,9 @@ import {
     ChevronRight,
 } from 'lucide-react';
 
+import IconApp from '@/app/components/icons/IconApp.svg';
+
+
 // Definimos la estructura de cada item de navegación
 const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -39,20 +42,20 @@ export default function Sidebar() {
 
     return (
         <nav
-            className={`relative flex h-screen flex-col bg-gray-900 text-white shadow-xl transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'
+            className={`relative flex h-screen flex-col bg-background-secondary text-foreground shadow-xl transition-all duration-300 ease-in-out ${isCollapsed ? 'w-20' : 'w-64'
                 }`}
         >
             {/* Botón para colapsar/expandir */}
             <button
                 onClick={toggleSidebar}
-                className="absolute -right-3 top-8 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-gray-700 text-white hover:bg-cyan-600 focus:outline-none"
+                className="absolute -right-3 top-8 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-background text-foreground hover:bg-primary focus:outline-none"
             >
                 {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
             </button>
 
             {/* Logo y Título */}
             <div className="flex h-20 items-center px-6">
-                <Bot size={32} className="text-cyan-400" />
+                <IconApp size={32} className="text-primary" />
                 {!isCollapsed && (
                     <span className="ml-3 text-xl font-bold animate-fade-in">FreelanceFlow</span>
                 )}
@@ -69,8 +72,8 @@ export default function Sidebar() {
                                     href={item.href}
                                     className={`flex items-center rounded-lg p-3 transition-colors duration-200
                     ${isActive
-                                            ? 'bg-cyan-600/30 text-white'
-                                            : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                            ? 'bg-background text-foreground'
+                                            : 'text-foreground-secondary hover:bg-background hover:text-foreground'
                                         }
                   `}
                                 >
@@ -88,13 +91,13 @@ export default function Sidebar() {
             </div>
 
             {/* Navegación Secundaria */}
-            <div className="border-t border-gray-700 p-4">
+            <div className="border-t border-background-secondary p-4">
                 <ul className="space-y-2">
                     {secondaryNavItems.map((item) => (
                         <li key={item.href}>
                             <Link
                                 href={item.href}
-                                className="flex items-center rounded-lg p-3 text-gray-400 transition-colors duration-200 hover:bg-gray-800 hover:text-white"
+                                className="flex items-center rounded-lg p-3 text-foreground-secondary transition-colors duration-200 hover:bg-background hover:text-foreground"
                             >
                                 <item.icon size={20} />
                                 {!isCollapsed && (

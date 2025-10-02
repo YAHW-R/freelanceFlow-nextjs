@@ -1,5 +1,3 @@
-// tailwind.config.ts
-
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
@@ -10,6 +8,7 @@ const config: Config = {
     ],
     theme: {
         extend: {
+            // 1. Define tus keyframes
             keyframes: {
                 'fade-in-a': {
                     '0%': { opacity: '0' },
@@ -49,13 +48,14 @@ const config: Config = {
                         transform: 'translateY(0)',
                     },
                 },
-                animation: {
-                    'fade-in': 'fade-in-a 0.3s ease-in-out',
-                    'fade-in-up': 'fade-in-up-a 0.5s ease-in-out',
-                    'fade-in-down': 'fade-in-down-a 0.5s ease-in-out',
-                    'fade-in-left': 'fade-in-left-a 0.5s ease-in-out',
-                    'subtle-pulse': 'subtle-pulse-a 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                },
+            },
+            // 2. Define la clase 'animation' al mismo nivel que 'keyframes'
+            animation: {
+                'fade-in': 'fade-in-a 0.3s ease-in-out',
+                'fade-in-up': 'fade-in-up-a 0.5s ease-in-out',
+                'fade-in-down': 'fade-in-down-a 0.5s ease-in-out',
+                'fade-in-left': 'fade-in-left-a 0.5s ease-in-out',
+                'subtle-pulse': 'subtle-pulse-a 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             },
         },
     },

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Hero() {
     return (
-        <section className="hero-gradient text-foreground">
+        <section className="hero-gradient text-white">
             <div className="max-w-7xl mx-auto py-24 px-4 sm:py-32">
                 <ScrollAnimation animation="animate-fade-in-up">
                     <div className="text-center">
@@ -14,10 +14,10 @@ export default function Hero() {
                             La plataforma todo en uno para gestionar proyectos, tiempo, facturación y clientes. Diseñada específicamente para freelancers que buscan profesionalizar su negocio.
                         </p>
                         <div className="mt-10 flex justify-center space-x-4">
-                            <Link href="/register" className="px-6 py-3 rounded-md shadow-sm text-primary bg-background-secondary hover:bg-background-secondary transition">
+                            <Link href="/register" className="px-6 py-3 rounded-md shadow-sm text-primary-hover bg-background hover:bg-background-secondary transition">
                                 Prueba gratis
                             </Link>
-                            <Link href="/demo" className="px-6 py-3 rounded-md shadow-sm text-foreground bg-primary bg-opacity-60 hover:bg-opacity-70 transition">
+                            <Link href="/dashboard" className="px-6 py-3 rounded-md shadow-sm text-foreground bg-primary bg-opacity-60 hover:bg-opacity-70 transition">
                                 Ver demo
                             </Link>
                         </div>

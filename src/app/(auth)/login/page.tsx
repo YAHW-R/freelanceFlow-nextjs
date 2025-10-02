@@ -2,10 +2,20 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; // Para redirigir
+import { useRouter, useParams } from 'next/navigation';
+
+// Server Actions
+import { singInWithEmail } from '@/app/actions/authActions'; // Acción de servidor para manejar inicio de sesión
+
+// Importa tu icono SVG
 import IconApp from '@/app/components/icons/IconApp.svg';
 
 export default function LoginPage() {
+
+    const { redirectedFrom } = useParams();
+
+
+    // forms states
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
@@ -34,7 +44,12 @@ export default function LoginPage() {
             // Simulación de éxito
             console.log('Inicio de sesión exitoso:', { email });
             // Guardar token, etc. (usar NextAuth para esto es lo ideal)
-            router.push('/dashboard'); // Redirige al dashboard
+            if (redirectedFrom) {
+                const redirectPath = Array.isArray(redirectedFrom) ? redirectedFrom[0] : redirectedFrom;
+                router.push(redirectPath); // Redirige a la página original
+            } else {
+                router.push('/dashboard'); // Redirige al dashboard
+            }
         } catch (err: unknown) {
             const errorMessage =
                 err && typeof err === 'object' && 'message' in err
@@ -45,6 +60,9 @@ export default function LoginPage() {
             setIsLoading(false);
         }
     };
+
+
+    // JSX del formulario de inicio de sesión
 
     return (
         <div className="w-full max-w-md rounded-lg bg-background-secondary p-8 shadow-md animate-fade-in-down">

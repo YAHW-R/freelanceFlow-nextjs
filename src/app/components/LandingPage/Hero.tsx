@@ -14,7 +14,7 @@ export default function Hero() {
                             La plataforma todo en uno para gestionar proyectos, tiempo, facturación y clientes. Diseñada específicamente para freelancers que buscan profesionalizar su negocio.
                         </p>
                         <div className="mt-10 flex justify-center space-x-4">
-                            <Link href="/register" className="px-6 py-3 rounded-md shadow-sm text-primary-hover bg-background hover:bg-background-secondary transition">
+                            <Link href="/register" className="px-6 py-3 rounded-md shadow-sm text-primary-hover bg-indigo-50 hover:bg-white transition">
                                 Prueba gratis
                             </Link>
                             <Link href="/dashboard" className="px-6 py-3 rounded-md shadow-sm text-foreground bg-primary bg-opacity-60 hover:bg-opacity-70 transition">

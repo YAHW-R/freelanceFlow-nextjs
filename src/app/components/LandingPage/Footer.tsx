@@ -16,7 +16,7 @@ export default function Footer() {
         { name: 'Facebook', icon: FaFacebookF, href: 'https://facebook.com/yourprofile' },
         { name: 'Twitter', icon: FaTwitter, href: 'https://twitter.com/yourprofile' },
         { name: 'LinkedIn', icon: FaLinkedinIn, href: 'https://linkedin.com/in/yourprofile' },
-        { name: 'GitHub', icon: FaGithub, href: 'https://github.com/yourprofile' }, // Opcional
+        { name: 'GitHub', icon: FaGithub, href: 'https://github.com/YAHW-R' }, // Opcional
     ];
 
     return (

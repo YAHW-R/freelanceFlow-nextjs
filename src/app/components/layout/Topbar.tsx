@@ -20,7 +20,7 @@ export default function Topbar() {
 
     // Datos de ejemplo para el usuario y notificaciones
     const userName = 'John Doe';
-    const userAvatar = '/avatars/john-doe.jpg'; // Ruta a tu imagen de avatar
+    const userAvatar = null// Ruta a tu imagen de avatar
     const unreadNotifications = 3;
 
     const notifications = [

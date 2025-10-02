@@ -54,12 +54,14 @@ export default function Sidebar() {
             </button>
 
             {/* Logo y Título */}
-            <div className="flex h-20 items-center px-6">
+            <Link
+                href="/"
+                className="flex h-20 items-center px-6 cursor-pointer">
                 <IconApp size={32} className="text-primary" />
                 {!isCollapsed && (
-                    <span className="ml-3 text-xl font-bold animate-fade-in">FreelanceFlow</span>
+                    <span className="ml-3 text-xl font-bold animate-fade-in hover:text-primary transition">FreelanceFlow</span>
                 )}
-            </div>
+            </Link>
 
             {/* Navegación Principal */}
             <div className="flex-1 overflow-y-auto">

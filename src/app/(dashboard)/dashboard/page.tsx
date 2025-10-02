@@ -1,5 +1,3 @@
-// app/(dashboard)/page.tsx
-
 'use client'; // Necesario si usas estados locales o interacciones de cliente
 
 import { useState } from 'react';

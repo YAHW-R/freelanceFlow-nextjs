@@ -4,7 +4,7 @@ import {
     LuDollarSign,
     LuUsers,
     LuChartColumn,
-    LuFileText,
+    LuBrainCircuit,
 } from "react-icons/lu";
 
 
@@ -58,12 +58,12 @@ export default function Funcionalidades() {
             ],
         },
         {
-            icon: LuFileText,
-            title: "Plantillas y Documentos",
+            icon: LuBrainCircuit,
+            title: "Integración con Inteligencia Artificial",
             items: [
-                "Propuestas profesionales personalizables",
-                "Contratos pre-diseñados para diferentes servicios",
-                "Biblioteca de documentos reutilizables",
+                "Descripciones y Ayudas generadas por IA",
+                "Asistente para redacción de propuestas",
+                "Sugerencias de optimización de tiempo y recursos",
             ],
         },
     ];

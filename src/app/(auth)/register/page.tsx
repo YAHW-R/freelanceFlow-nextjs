@@ -1,19 +1,22 @@
-// app/(auth)/register/page.tsx
-
 'use client'; // Componente de cliente para manejar estado de formulario
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+
+import { registerWithEmail } from '@/app/actions/authActions';
+
+// Importa tu icono SVG como un componente React
 import IconApp from '@/app/components/icons/IconApp.svg';
 
 export default function RegisterPage() {
+
+
+    // Estado del formulario
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
@@ -27,22 +30,27 @@ export default function RegisterPage() {
         }
 
         try {
-            // Aquí simularías una llamada a tu API de registro
-            // const response = await fetch('/api/auth/register', {
-            //   method: 'POST',
-            //   headers: { 'Content-Type': 'application/json' },
-            //   body: JSON.stringify({ email, password }),
-            // });
 
-            // const data = await response.json();
+            if (password.length < 6) {
+                setError('La contraseña debe tener al menos 6 caracteres.');
+                setIsLoading(false);
+                return;
+            }
 
-            // if (!response.ok) {
-            //   throw new Error(data.message || 'Error de registro');
-            // }
+            if (email.trim() === '') {
+                setError('El correo electrónico no puede estar vacío.');
+                setIsLoading(false);
+                return;
+            }
 
-            // Simulación de éxito
-            console.log('Registro exitoso:', { email });
-            router.push('/dashboard'); // Redirige al dashboard o a una página de confirmación
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                setError('Por favor, ingresa un correo electrónico válido.');
+                setIsLoading(false);
+                return;
+            }
+
+            await registerWithEmail({ email, password });
+
         } catch (err: unknown) {
             const errorMessage =
                 typeof err === 'object' && err !== null && 'message' in err && typeof (err as Error).message === 'string'

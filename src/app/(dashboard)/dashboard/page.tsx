@@ -1,9 +1,14 @@
 'use client'; // Necesario si usas estados locales o interacciones de cliente
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Sparkles, CalendarCheck, TrendingUp, DollarSign } from 'lucide-react'; // Iconos para el dashboard
-import { Project, ProjectStatus } from '@/app/components/types'; // Importamos tipos si los usamos
+
+
+// Iconos para el dashboard
+import { Sparkles, CalendarCheck, TrendingUp, DollarSign } from 'lucide-react';
+
+import { Profile, Project } from '@/lib/types'; // Importamos tipos si los usamos
+import { getUserProfile } from '@/app/actions/profileActions';
 
 // Datos de prueba (en una app real, vendrían de una API)
 const mockProjects: Project[] = [
@@ -19,13 +24,28 @@ const mockTasks = [
 ];
 
 export default function DashboardPage() {
-    const [userName] = useState<string>('Freelancer'); // Nombre de usuario de prueba
+
+    const [profile, setProfile] = useState<Profile>({
+        id: '',
+        username: '',
+        fullname: '',
+        email: ''
+    });
+
+    useEffect(() => {
+        // Aquí podrías cargar el perfil del usuario si es necesario
+        getUserProfile().then(profile => {
+            if (profile) {
+                setProfile(profile);
+            }
+        });
+    }, []);
 
     return (
         <div className="space-y-8 animate-fade-in">
             {/* Saludo y Título Principal */}
             <h1 className="text-4xl font-extrabold text-foreground animate-fade-in-down">
-                👋 Hola, {userName}!
+                👋 Hola, {profile.username ?? profile.email ?? "Freelance"}!
             </h1>
 
             {/* Tarjetas de Resumen (Overview Cards) */}

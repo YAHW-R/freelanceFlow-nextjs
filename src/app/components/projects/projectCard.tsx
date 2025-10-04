@@ -1,8 +1,6 @@
-// app/components/projects/ProjectCard.tsx
-
 import Link from 'next/link';
 import { MoreVertical, CheckCircle, Clock, PauseCircle, Archive } from 'lucide-react';
-import type { Project, ProjectStatus } from '@/app/components/types'; // Importa la interfaz Project
+import type { ClientOptions, Project, ProjectStatus } from '@/lib/types';
 
 // Función auxiliar para obtener el color del estado
 const getStatusColor = (status: ProjectStatus) => {
@@ -42,32 +40,35 @@ const getStatusIcon = (status: ProjectStatus) => {
 
 interface ProjectCardProps {
     project: Project;
+    clients: ClientOptions[];
 }
 
-export default function ProjectCard({ project }: ProjectCardProps) {
+export default function ProjectCard({ project, clients }: ProjectCardProps) {
     // Calcular días restantes (simplificado)
     const today = new Date();
-    const dueDate = new Date(project.dueDate);
+    const dueDate = new Date(project.due_date || 0);
     const diffTime = dueDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     const isOverdue = diffDays < 0 && project.status !== 'Finalizado';
     const isDueSoon = diffDays > 0 && diffDays <= 7 && project.status !== 'Finalizado';
 
+    const clientName = clients.find(client => client.id === project.client_id)?.name || 'Desconocido';
+
 
     return (
-        <div className="relative rounded-lg bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-200 animate-fade-in-down">
+        <div className="relative rounded-lg bg-background-secondary p-6 shadow-sm hover:shadow-md transition-shadow duration-200 animate-fade-in-down">
             {/* Botón de opciones (el "•••") */}
-            <button className="absolute right-4 top-4 text-gray-400 hover:text-gray-700 transition-colors duration-200">
+            <button className="absolute right-4 top-4 text-foreground-secondary hover:text-primary transition-colors duration-200">
                 <MoreVertical size={20} />
             </button>
 
             {/* Título del Proyecto y Cliente */}
             <Link href={`/dashboard/projects/${project.id}`} className="block">
-                <h3 className="text-xl font-semibold text-gray-900 hover:text-cyan-600 transition-colors duration-200">
+                <h3 className="text-xl font-semibold text-foreground hover:text-primary transition-colors duration-200">
                     {project.name}
                 </h3>
-                <p className="mt-1 text-sm text-gray-600">Cliente: {project.clientName}</p>
+                <p className="mt-1 text-sm text-foreground">Cliente: {clientName}</p>
             </Link>
 
             {/* Estado del Proyecto */}
@@ -78,24 +79,24 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
             {/* Barra de Progreso */}
             <div className="mt-4">
-                <div className="flex justify-between text-sm font-medium text-gray-700">
+                <div className="flex justify-between text-sm font-medium text-foreground mb-1">
                     <span>Progreso</span>
                     <span>{project.progress}%</span>
                 </div>
-                <div className="mt-1 h-2 w-full rounded-full bg-gray-200">
+                <div className="mt-1 h-2 w-full rounded-full bg-foreground">
                     <div
-                        className="h-full rounded-full bg-cyan-600 transition-all duration-500 ease-out"
+                        className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
                         style={{ width: `${project.progress}%` }}
                     ></div>
                 </div>
             </div>
 
             {/* Fecha de Finalización */}
-            <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+            <div className="mt-4 flex items-center justify-between text-sm text-foreground">
                 <p>
                     Fecha de Entrega:{' '}
                     <span className={`font-medium ${isOverdue ? 'text-red-600' : isDueSoon ? 'text-orange-600' : ''}`}>
-                        {new Date(project.dueDate).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        {new Date(project.due_date || 0).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </span>
                 </p>
                 {isOverdue && (

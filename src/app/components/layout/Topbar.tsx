@@ -1,6 +1,6 @@
 'use client'; // Necesario para useState y Dropdown
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Bell, // Icono de notificaciones
@@ -11,16 +11,46 @@ import {
     Settings, // Icono para configuración
     ChevronDown, // Icono para desplegables
 } from 'lucide-react'; // Asegúrate de tener lucide-react instalado
-import Image from 'next/image'; // Para un avatar de usuario real
+
+import { getUserProfile } from '@/app/actions/profileActions';
+import { signOut } from '@/app/actions/authActions';
+import { Profile } from '../../../lib/types';
+
+import Image from 'next/image';
 
 export default function Topbar() {
+
+    // State para manejar la visibilidad de los menús desplegables
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
     const [isQuickCreateOpen, setIsQuickCreateOpen] = useState(false);
 
-    // Datos de ejemplo para el usuario y notificaciones
-    const userName = 'John Doe';
-    const userAvatar = null// Ruta a tu imagen de avatar
+
+    //userData state
+    const [userData, setUserData] = useState<Profile>({
+        id: "",
+        username: "Freelancer",
+        fullname: "",
+        email: ""
+    });
+
+
+    useEffect(() => {
+        // Fetch user profile data when the component mounts
+        const fetchUserData = async () => {
+            const profile = await getUserProfile();
+            if (profile) {
+                setUserData(profile);
+            }
+        };
+        fetchUserData();
+    }, []);
+
+    const handleLogout = async () => {
+        await signOut();
+    }
+
+
     const unreadNotifications = 3;
 
     const notifications = [
@@ -47,7 +77,7 @@ export default function Topbar() {
                 <div className="relative">
                     <button
                         onClick={() => setIsQuickCreateOpen(!isQuickCreateOpen)}
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-foreground transition-all duration-200 hover:scale-105 hover:bg-primary-hover animate-subtle-pulse"
+                        className="flex h-10 w-10 items-center justify-center rounded-full cursor-pointer bg-primary text-foreground transition-all duration-200 hover:scale-105 hover:bg-primary-hover animate-subtle-pulse"
                         title="Crear nuevo..."
                     >
                         <Plus size={24} />
@@ -71,7 +101,7 @@ export default function Topbar() {
                 <div className="relative">
                     <button
                         onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                        className="relative p-2 text-foreground-secondary hover:text-foreground transition-colors duration-200"
+                        className="relative p-2 cursor-pointer text-foreground-secondary hover:text-foreground transition-colors duration-200"
                         title="Notificaciones"
                     >
                         <Bell size={24} />
@@ -107,13 +137,13 @@ export default function Topbar() {
                 <div className="relative">
                     <button
                         onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                        className="flex items-center space-x-2 rounded-full p-1 hover:bg-background-secondary transition-colors duration-200"
+                        className="flex items-center space-x-2 rounded-full p-1 cursor-pointer text-foreground hover:bg-background transition-colors duration-200"
                         title="Perfil de usuario"
                     >
-                        {userAvatar ? (
+                        {userData.avatarUrl ? (
                             <Image
-                                src={userAvatar}
-                                alt={userName}
+                                src={userData.avatarUrl}
+                                alt={userData.username ?? userData.email ?? "Usuario"}
                                 width={32}
                                 height={32}
                                 className="h-8 w-8 rounded-full object-cover"
@@ -121,19 +151,21 @@ export default function Topbar() {
                         ) : (
                             <User size={32} className="rounded-full bg-background-secondary p-1 text-foreground-secondary" />
                         )}
-                        <span className="hidden text-sm font-medium text-foreground-secondary md:block">{userName}</span>
+                        <span className="hidden text-sm font-medium text-foreground-secondary md:block">{userData.username ?? userData.email ?? "Freelance"}</span>
                         <ChevronDown size={16} className="text-foreground-secondary" />
                     </button>
                     {isProfileMenuOpen && (
-                        <div className="absolute right-0 top-12 z-20 w-48 rounded-md bg-background-secondary p-2 shadow-lg ring-1 ring-background ring-opacity-5 animate-fade-in">
-                            <Link href="/dashboard/profile" className="block rounded-md px-4 py-2 text-sm text-foreground-secondary hover:bg-background-secondary">
+                        <div className="absolute right-0 top-12 z-20 w-48 rounded-md cursor-pointer bg-background-secondary p-2 shadow-lg ring-1 ring-background ring-opacity-5 animate-fade-in">
+                            <Link href="/dashboard/profile" className="block rounded-md px-4 py-2 text-sm text-foreground-secondary hover:bg-background">
                                 <User size={16} className="inline-block mr-2" /> Mi Perfil
                             </Link>
-                            <Link href="/dashboard/settings" className="block rounded-md px-4 py-2 text-sm text-foreground-secondary hover:bg-background-secondary">
+                            <Link href="/dashboard/settings" className="block rounded-md cursor-pointer px-4 py-2 text-sm text-foreground-secondary hover:bg-background">
                                 <Settings size={16} className="inline-block mr-2" /> Configuración
                             </Link>
                             <div className="my-1 border-t border-background-secondary"></div>
-                            <button className="flex w-full items-center rounded-md px-4 py-2 text-left text-sm text-secondary hover:bg-background-secondary">
+                            <button
+                                onClick={handleLogout}
+                                className="flex w-full items-center rounded-md px-4 py-2 text-left text-sm cursor-pointer text-secondary hover:bg-background">
                                 <LogOut size={16} className="inline-block mr-2" /> Cerrar Sesión
                             </button>
                         </div>

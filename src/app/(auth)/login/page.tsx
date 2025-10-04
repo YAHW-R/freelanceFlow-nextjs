@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
 // Server Actions
-import { singInWithEmail } from '@/app/actions/authActions'; // Acción de servidor para manejar inicio de sesión
+import { signInWithEmail } from '@/app/actions/authActions'; // Acción de servidor para manejar inicio de sesión
 
 // Importa tu icono SVG
 import IconApp from '@/app/components/icons/IconApp.svg';
@@ -20,7 +20,6 @@ export default function LoginPage() {
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
@@ -28,27 +27,12 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            // Aquí simularías una llamada a tu API de autenticación
-            // const response = await fetch('/api/auth/login', {
-            //   method: 'POST',
-            //   headers: { 'Content-Type': 'application/json' },
-            //   body: JSON.stringify({ email, password }),
-            // });
 
-            // const data = await response.json();
-
-            // if (!response.ok) {
-            //   throw new Error(data.message || 'Error de inicio de sesión');
-            // }
-
-            // Simulación de éxito
-            console.log('Inicio de sesión exitoso:', { email });
-            // Guardar token, etc. (usar NextAuth para esto es lo ideal)
             if (redirectedFrom) {
                 const redirectPath = Array.isArray(redirectedFrom) ? redirectedFrom[0] : redirectedFrom;
-                router.push(redirectPath); // Redirige a la página original
+                await signInWithEmail({ email, password, redirectPage: redirectPath });
             } else {
-                router.push('/dashboard'); // Redirige al dashboard
+                await signInWithEmail({ email, password });
             }
         } catch (err: unknown) {
             const errorMessage =

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -15,6 +15,8 @@ import {
     ChevronLeft,
     ChevronRight,
 } from 'lucide-react';
+
+import { Profile } from '../../../lib/types';
 
 import IconApp from '@/app/components/icons/IconApp.svg';
 
@@ -35,7 +37,16 @@ const secondaryNavItems = [
 ];
 
 export default function Sidebar() {
+
     const [isCollapsed, setIsCollapsed] = useState(false);
+
+    const [usernmae, setUsername] = useState<Profile>({
+        id: "",
+        name: "Freelancer",
+        fullname: "",
+        email: "freelnacer@gmail.com"
+    });
+
     const pathname = usePathname();
 
     const toggleSidebar = () => setIsCollapsed(!isCollapsed);

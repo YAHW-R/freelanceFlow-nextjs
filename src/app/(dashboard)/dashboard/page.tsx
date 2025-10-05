@@ -3,25 +3,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+import { Project, Profile, Client, Task } from '@/lib/types';
+import { fetchDashboardData } from '@/app/actions/dashboardActions';
 
 // Iconos para el dashboard
 import { Sparkles, CalendarCheck, TrendingUp, DollarSign } from 'lucide-react';
 
-import { Profile, Project } from '@/lib/types'; // Importamos tipos si los usamos
 import { getUserProfile } from '@/app/actions/profileActions';
-
-// Datos de prueba (en una app real, vendrían de una API)
-const mockProjects: Project[] = [
-    { id: 'p1', name: 'Rediseño Web UX/UI', clientName: 'Innovate Corp', status: 'En Progreso', progress: 70, dueDate: '2024-11-20' },
-    { id: 'p2', name: 'Campaña Marketing Digital', clientName: 'Global Brands', status: 'En Progreso', progress: 45, dueDate: '2024-12-10' },
-    { id: 'p3', name: 'Desarrollo Backend API', clientName: 'Tech Solutions', status: 'Pendiente', progress: 0, dueDate: '2024-11-05' },
-];
-
-const mockTasks = [
-    { id: 't1', title: 'Revisar wireframes de Home', project: 'Rediseño Web UX/UI', dueDate: 'Hoy', status: 'Urgente' },
-    { id: 't2', title: 'Llamar a Cliente Global Brands', project: 'Campaña Marketing Digital', dueDate: 'Mañana', status: 'Pendiente' },
-    { id: 't3', title: 'Enviar propuesta de Project X', project: 'N/A', dueDate: 'Viernes', status: 'Pendiente' },
-];
 
 export default function DashboardPage() {
 
@@ -32,6 +20,15 @@ export default function DashboardPage() {
         email: ''
     });
 
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [clients, setClients] = useState<Client[]>([]);
+    const [tasks, setTasks] = useState<Task[]>([]);
+
+    const tasksDueToday = tasks.filter(task => task.due_date === 'Hoy').length;
+
+
+    const projectsInProgress = projects.filter(project => project.status === 'En Progreso').length;
+
     useEffect(() => {
         // Aquí podrías cargar el perfil del usuario si es necesario
         getUserProfile().then(profile => {
@@ -39,7 +36,14 @@ export default function DashboardPage() {
                 setProfile(profile);
             }
         });
-    }, []);
+
+        // Cargar datos del dashboard
+        fetchDashboardData().then(data => {
+            setProjects(data.projects || []);
+            setClients(data.clients || []);
+            setTasks(data.tasks || []);
+        });
+    }, [profile.id]);
 
     return (
         <div className="space-y-8 animate-fade-in">
@@ -61,11 +65,11 @@ export default function DashboardPage() {
 
                 <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-down delay-100">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-foreground">Proyectos Activos</h3>
+                        <h3 className="text-lg font-semibold text-foreground">{projects.length <= 1 ? "Proyecto Activo" : "Proyectos Activos"}</h3>
                         <TrendingUp size={24} className="text-blue-500" />
                     </div>
-                    <p className="mt-4 text-3xl font-bold text-foreground">5</p>
-                    <p className="mt-1 text-sm text-foreground-secondary">2 comenzados esta semana</p>
+                    <p className="mt-4 text-3xl font-bold text-foreground">{projects.length}</p>
+                    <p className="mt-1 text-sm text-foreground-secondary">{projectsInProgress >= 1 ? projectsInProgress + " tareas en progreso" : ""}</p>
                 </div>
 
                 <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-down delay-200">
@@ -73,8 +77,8 @@ export default function DashboardPage() {
                         <h3 className="text-lg font-semibold text-foreground">Tareas Pendientes</h3>
                         <CalendarCheck size={24} className="text-orange-500" />
                     </div>
-                    <p className="mt-4 text-3xl font-bold text-foreground">8</p>
-                    <p className="mt-1 text-sm text-foreground-secondary">3 vencen hoy</p>
+                    <p className="mt-4 text-3xl font-bold text-foreground">{tasks.filter(task => task.status === "Pendiente").length}</p>
+                    <p className="mt-1 text-sm text-foreground-secondary">{tasksDueToday >= 1 ? tasksDueToday + " vencen hoy" : ""}</p>
                 </div>
 
                 <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-down delay-300">
@@ -97,12 +101,12 @@ export default function DashboardPage() {
                         </Link>
                     </div>
                     <ul className="mt-4 space-y-4">
-                        {mockProjects.filter(p => p.status === 'En Progreso' || p.status === 'Pendiente').map(project => (
+                        {projects.filter(p => p.status === 'En Progreso' || p.status === 'Pendiente').map(project => (
                             <li key={project.id} className="border-b border-foreground-secondary pb-4 last:border-b-0 last:pb-0">
                                 <Link href={`/dashboard/projects/${project.id}`} className="block hover:text-primary-hover transition-colors duration-200">
                                     <h3 className="text-lg font-medium text-foreground">{project.name}</h3>
                                 </Link>
-                                <p className="text-sm text-foreground-secondary">Cliente: {project.clientName}</p>
+                                <p className="text-sm text-foreground-secondary">Cliente: {clients.find(client => client.id === project.client_id)?.name}</p>
                                 <div className="mt-2 flex items-center justify-between text-sm">
                                     <span className="text-foreground-secondary">Progreso: {project.progress}%</span>
                                     <div className="h-1.5 w-1/2 rounded-full bg-foreground">
@@ -111,7 +115,7 @@ export default function DashboardPage() {
                                             style={{ width: `${project.progress}%` }}
                                         ></div>
                                     </div>
-                                    <span className="text-foreground-secondary">Vence: {new Date(project.dueDate).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span>
+                                    <span className="text-foreground-secondary">Vence: {new Date(project.due_date ?? Date.now()).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span>
                                 </div>
                             </li>
                         ))}
@@ -127,7 +131,7 @@ export default function DashboardPage() {
                         </Link>
                     </div>
                     <ul className="mt-4 space-y-3">
-                        {mockTasks.map(task => (
+                        {tasks.map(task => (
                             <li key={task.id} className="flex items-center">
                                 <input
                                     type="checkbox"
@@ -137,10 +141,10 @@ export default function DashboardPage() {
                                 // onChange={() => toggleTaskStatus(task.id)}
                                 />
                                 <label htmlFor={`task-${task.id}`} className="ml-3 text-sm font-medium text-foreground">
-                                    {task.title} <span className="text-foreground-secondary">({task.project})</span>
+                                    {task.title} <span className="text-foreground-secondary">({projects.find(project => project.id === task.project_id)?.name})</span>
                                 </label>
-                                <span className={`ml-auto text-xs font-semibold ${task.dueDate === 'Hoy' ? 'text-secondary' : 'text-foreground-secondary'}`}>
-                                    {task.dueDate}
+                                <span className={`ml-auto text-xs font-semibold ${task.due_date === 'Hoy' ? 'text-secondary' : 'text-foreground-secondary'}`}>
+                                    {task.due_date}
                                 </span>
                             </li>
                         ))}

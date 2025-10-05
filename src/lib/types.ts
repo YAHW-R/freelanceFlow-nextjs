@@ -46,12 +46,14 @@ export interface ClientOptions {
     name: string;
 }
 
+export type TaskStatus = 'Pendiente' | 'En Progreso' | 'Completada';
+
 export interface Task {
     id: string;
     project_id: string;
     title: string;
     description?: string;
-    status: 'To Do' | 'In Progress' | 'Done';
+    status: TaskStatus | string;
     due_date?: string;
     created_at: string;
 }

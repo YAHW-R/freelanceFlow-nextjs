@@ -1,6 +1,8 @@
 import ScrollAnimation from "../ScrollAnimation"
 import Image from "next/image"
 
+import imageDashboard from "@/assets/dashboard-mockup.png"
+
 import { LuCheck } from "react-icons/lu"
 
 export default function Dashboard() {
@@ -50,7 +52,7 @@ export default function Dashboard() {
                 <ScrollAnimation animation="animate-fade-in-right" className="mt-12 lg:mt-0 lg:col-span-6">
                     <div className="bg-background-secondary rounded-lg shadow-xl overflow-hidden aspect-[3/2] relative h-0" style={{ paddingBottom: '75%' }}>
                         <Image
-                            src="/dashboard-mockup.webp"
+                            src={imageDashboard}
                             alt="Dashboard preview"
                             fill
                             className="object-cover"

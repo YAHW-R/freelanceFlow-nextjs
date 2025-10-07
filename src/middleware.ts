@@ -5,6 +5,12 @@ import { createClient } from './lib/supabase/server'
 const publicPaths = [
     '/login',
     '/register',
+    '/register/check-email',
+    '/auth/callback',
+    '/forgot-password',
+    '/reset-password',
+    '/terms',
+    '/privacy',
     '/',
     '/about',
     '/functions',

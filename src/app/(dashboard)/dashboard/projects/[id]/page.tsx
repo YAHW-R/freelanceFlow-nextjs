@@ -1,36 +1,35 @@
-// app/(dashboard)/projects/[id]/page.tsx
-
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
-import { ArrowLeft, Edit, Calendar, DollarSign, ListTodo, Info, CheckCircle, PauseCircle, Clock, Archive } from 'lucide-react';
-import TaskOverview from '@/app/components/tasks/TaskOverviw'; // Importamos el Client Component
 
-// Define la interfaz completa para un proyecto (incluyendo client_name)
-// Asegúrate de que esta interfaz sea consistente con lo que devuelve tu DB.
-export interface ProjectDetails {
-    id: string;
-    name: string;
-    description: string | null;
-    status: 'Pendiente' | 'En Progreso' | 'Finalizado' | 'Archivado' | 'En Pausa';
-    due_date: string; // ISO date string
-    budget: number | null;
-    client_id: string;
-    created_at: string;
-    user_id: string;
+import {
+    ArrowLeft,
+    Edit,
+    Calendar,
+    DollarSign,
+    Info,
+    CheckCircle,
+    PauseCircle,
+    Clock,
+    Archive
+} from 'lucide-react';
+
+// Importamos el Client Component para mostrar las tareas del proyecto
+import TaskOverview from '@/app/components/tasks/TaskOverviw'; // Importamos el Client Component
+// Importa el tipo Project si lo tienes definido
+import type { Project } from '@/lib/types';
+
+// Extendemos el tipo Project para incluir el nombre del cliente
+export interface ProjectDetails extends Project {
     // Propiedades adicionales del cliente obtenidas con .select('*, clients(name)')
     clients?: {
         name: string;
     } | null;
 }
 
-interface ProjectPageProps {
-    params: {
-        id: string; // El ID del proyecto de la ruta dinámica
-    };
-}
+export default async function ProjectPage(props: { params: Promise<{ id: string }> }) {
 
-export default async function ProjectPage({ params }: ProjectPageProps) {
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -38,11 +37,17 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         redirect('/login');
     }
 
+    const params = await props.params;
+    if (!params.id) {
+        notFound(); // 404 si no hay ID en los parámetros
+    }
+    const id = params.id;
+
     // Obtener los detalles del proyecto y el nombre del cliente
     const { data: project, error } = await supabase
         .from('projects')
         .select('*, clients(name)') // Seleccionamos el proyecto y el nombre del cliente relacionado
-        .eq('id', params.id)
+        .eq('id', id)
         .eq('user_id', user.id) // Aseguramos que el usuario solo vea sus propios proyectos
         .single();
 

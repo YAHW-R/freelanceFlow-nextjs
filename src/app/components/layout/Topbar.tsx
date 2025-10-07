@@ -14,7 +14,8 @@ import {
 
 import { getUserProfile } from '@/app/actions/profileActions';
 import { signOut } from '@/app/actions/authActions';
-import { Profile } from '../../../lib/types';
+import { getTasksUser } from '@/app/actions/taskActions';
+import { Profile, TaskStatus, TaskWithProjectName } from '../../../lib/types';
 
 import Image from 'next/image';
 
@@ -34,6 +35,8 @@ export default function Topbar() {
         email: ""
     });
 
+    const [tasks, setTasks] = useState<TaskWithProjectName[]>([]);
+
 
     useEffect(() => {
         // Fetch user profile data when the component mounts
@@ -43,7 +46,16 @@ export default function Topbar() {
                 setUserData(profile);
             }
         };
+
+        const fetchTasks = async () => {
+            const tasks = await getTasksUser();
+            if (tasks) {
+                setTasks(tasks);
+            }
+        }
+
         fetchUserData();
+        fetchTasks();
     }, []);
 
     const handleLogout = async () => {
@@ -51,13 +63,7 @@ export default function Topbar() {
     }
 
 
-    const unreadNotifications = 3;
-
-    const notifications = [
-        { id: 1, message: 'Tarea "Diseñar Login" completada.', time: 'hace 5 min' },
-        { id: 2, message: 'Nuevo comentario en Proyecto Alpha.', time: 'hace 1 hora' },
-        { id: 3, message: 'Factura #001 pendiente de pago.', time: 'hace 3 horas' },
-    ];
+    const unreadNotifications = tasks.filter(task => !(task.status as TaskStatus === 'Completada')).length;
 
     return (
         <header className="flex h-16 items-center justify-between border-b border-background bg-background-secondary px-6 shadow-sm">
@@ -115,11 +121,11 @@ export default function Topbar() {
                         <div className="absolute right-0 top-12 z-20 w-80 rounded-md bg-background-secondary p-3 shadow-lg ring-1 ring-background ring-opacity-5 animate-fade-in">
                             <h3 className="mb-2 text-sm font-semibold text-foreground">Notificaciones</h3>
                             <ul className="space-y-2">
-                                {notifications.length > 0 ? (
-                                    notifications.map((notif) => (
-                                        <li key={notif.id} className="border-b border-background pb-2 last:border-b-0">
-                                            <p className="text-sm text-foreground-secondary">{notif.message}</p>
-                                            <span className="text-xs text-foreground-secondary">{notif.time}</span>
+                                {tasks.length > 0 ? (
+                                    tasks.map((task) => (
+                                        <li key={task.id} className="border-b border-background pb-2 last:border-b-0">
+                                            <p className="text-sm text-foreground-secondary">{task.description ?? task.title}</p>
+                                            <span className="text-xs text-foreground-secondary">{task.due_date ?? 'N/A'}</span>
                                         </li>
                                     ))
                                 ) : (
@@ -140,9 +146,9 @@ export default function Topbar() {
                         className="flex items-center space-x-2 rounded-full p-1 cursor-pointer text-foreground hover:bg-background transition-colors duration-200"
                         title="Perfil de usuario"
                     >
-                        {userData.avatarUrl ? (
+                        {userData.avatar_url ? (
                             <Image
-                                src={userData.avatarUrl}
+                                src={userData.avatar_url}
                                 alt={userData.username ?? userData.email ?? "Usuario"}
                                 width={32}
                                 height={32}

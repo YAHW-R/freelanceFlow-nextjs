@@ -40,13 +40,6 @@ export default function Sidebar() {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
 
-    const [usernmae, setUsername] = useState<Profile>({
-        id: "",
-        name: "Freelancer",
-        fullname: "",
-        email: "freelnacer@gmail.com"
-    });
-
     const pathname = usePathname();
 
     const toggleSidebar = () => setIsCollapsed(!isCollapsed);

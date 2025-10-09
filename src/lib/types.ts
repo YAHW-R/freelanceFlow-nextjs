@@ -20,13 +20,15 @@ export interface Project {
 export interface Profile {
     id: string;
     username: string;
-    fullname: string;
+    full_name: string;
     email: string;
     avatar_url?: string;
     bio?: string;
-    skills?: string;
+    skills?: string[];
     subcirption_plan?: string;
     location?: string;
+    updated_at?: string;
+    created_at: string;
 }
 
 export interface Client {
@@ -57,10 +59,29 @@ export interface Task {
     description?: string;
     status: TaskStatus | string;
     priority: TaskPriority | string;
-    due_date?: string;
+    due_date: string;
     created_at: string;
 }
 
+export interface CreateTask {
+    project_id: string;
+    user_id: string;
+    title: string;
+    description?: string;
+    status: TaskStatus | string;
+    priority: TaskPriority | string;
+    due_date: string;
+}
+
+
 export interface TaskWithProjectName extends Task {
     project_name?: string;
+}
+
+export interface UpdateProfileFormData {
+    username: string | null;
+    full_name: string | null;
+    avatar_url: string | null;
+    skills: string | null;
+    bio: string | null;
 }

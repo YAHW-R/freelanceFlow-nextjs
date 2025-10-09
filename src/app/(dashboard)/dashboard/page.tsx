@@ -16,7 +16,11 @@ export default function DashboardPage() {
     const [profile, setProfile] = useState<Profile>({
         id: '',
         username: '',
-        fullname: '',
+        full_name: '',
+        avatar_url: '',
+        bio: '',
+        skills: [],
+        created_at: '',
         email: ''
     });
 

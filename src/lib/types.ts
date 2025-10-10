@@ -1,6 +1,6 @@
 // app/components/types.ts o app/lib/types.ts
 
-export type ProjectStatus = 'En Progreso' | 'Finalizado' | 'Pendiente' | 'Archivado' | 'En Pausa';
+export type ProjectStatus = 'in_progress' | 'completed' | 'pending' | 'archived' | 'on_hold';
 
 export interface Project {
     id: string;
@@ -14,6 +14,7 @@ export interface Project {
     start_data?: string;
     due_date?: string;
     hourly_rate?: number;
+    billing_type: 'hourly' | 'fixed_price';
     created_at: string;
 }
 
@@ -50,7 +51,7 @@ export interface ClientOptions {
     name: string;
 }
 
-export type TaskStatus = 'Pendiente' | 'En Progreso' | 'Completada';
+export type TaskStatus = 'pending' | 'in_progress' | 'completed';
 export type TaskPriority = 'Baja' | 'Media' | 'Alta';
 
 export interface Task {

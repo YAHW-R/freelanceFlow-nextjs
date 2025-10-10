@@ -72,7 +72,7 @@ export default function TaskOverview({ projectId }: TaskOverviewProps) {
     const handleToggleTaskStatus = async (taskId: string, currentStatus: TaskStatus) => {
 
 
-        const newStatus: TaskStatus = currentStatus === ('Completada' as TaskStatus) ? ('Pendiente' as TaskStatus) : ('Completada' as TaskStatus);
+        const newStatus: TaskStatus = currentStatus === 'completed' ? 'pending' : 'completed';
         setLoading(true); // O puedes manejar el loading individualmente por tarea
         const { error: updateError } = await supabase
             .from('tasks')
@@ -96,9 +96,9 @@ export default function TaskOverview({ projectId }: TaskOverviewProps) {
 
     const getTaskStatusDisplay = (status: TaskStatus) => {
         switch (status) {
-            case 'Pendiente': return { icon: <Circle size={16} className="text-yellow-500" />, color: 'text-yellow-500', text: 'Pendiente' };
-            case 'En Progreso': return { icon: <Loader2 size={16} className="text-blue-500 animate-spin" />, color: 'text-blue-500', text: 'En Progreso' };
-            case 'Completada': return { icon: <CheckCircle size={16} className="text-green-500" />, color: 'text-green-500', text: 'Completada' };
+            case 'pending': return { icon: <Circle size={16} className="text-yellow-500" />, color: 'text-yellow-500', text: 'Pendiente' };
+            case 'in_progress': return { icon: <Loader2 size={16} className="text-blue-500 animate-spin" />, color: 'text-blue-500', text: 'En Progreso' };
+            case 'completed': return { icon: <CheckCircle size={16} className="text-green-500" />, color: 'text-green-500', text: 'Completada' };
             default: return { icon: <Info size={16} className="text-gray-400" />, color: 'text-gray-400', text: status };
         }
     };
@@ -148,9 +148,9 @@ export default function TaskOverview({ projectId }: TaskOverviewProps) {
                     className="rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary text-sm text-foreground-primary bg-background-secondary"
                 >
                     <option value="Todos">Todas</option>
-                    <option value="Pendiente">Pendientes</option>
-                    <option value="En Progreso">En Progreso</option>
-                    <option value="Completada">Completadas</option>
+                    <option value="pending">Pendientes</option>
+                    <option value="in_progress">En Progreso</option>
+                    <option value="completed">Completadas</option>
                 </select>
             </div>
 
@@ -166,18 +166,18 @@ export default function TaskOverview({ projectId }: TaskOverviewProps) {
                                     <button
                                         onClick={() => handleToggleTaskStatus(task.id, task.status as TaskStatus)}
                                         className="flex items-center space-x-2 text-foreground-primary hover:text-primary-hover transition-colors duration-200 focus:outline-none"
-                                        aria-label={`Marcar tarea "${task.title}" como ${task.status === 'Completada' ? 'Pendiente' : 'Completada'}`}
+                                        aria-label={`Marcar tarea "${task.title}" como ${task.status === 'completed' ? 'Pendiente' : 'Completada'}`}
                                     >
-                                        {task.status === 'Completada' ? (
+                                        {task.status === 'completed' ? (
                                             <CheckCircle size={20} className="text-green-500" />
                                         ) : (
                                             <Circle size={20} className="text-gray-400" />
                                         )}
-                                        <span className={`font-medium ${task.status === 'Completada' ? 'line-through text-gray-500' : ''}`}>
+                                        <span className={`font-medium ${task.status === 'completed' ? 'line-through text-gray-500' : ''}`}>
                                             {task.title}
                                         </span>
                                     </button>
-                                    <span className={`ml-auto text-xs font-semibold px-2 py-1 rounded-full ${task.status === 'Completada' ? 'bg-green-100 text-green-700' : task.status === 'En Progreso' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                    <span className={`ml-auto text-xs font-semibold px-2 py-1 rounded-full ${task.status === 'completed' ? 'bg-green-100 text-green-700' : task.status === 'in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
                                         {statusDisplay.text}
                                     </span>
                                 </div>

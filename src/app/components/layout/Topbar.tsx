@@ -135,7 +135,7 @@ export default function Topbar() {
         await signOut();
     }
 
-    const unreadNotifications = tasks.filter(task => !(task.status as TaskStatus === 'Completada')).length;
+    const unreadNotifications = tasks.filter(task => task.status !== 'completed').length;
 
     return (
         <header className="flex h-16 items-center justify-between border-b border-background bg-background-secondary px-6 shadow-sm">

@@ -31,7 +31,8 @@ export default function NewProjectPage() {
     const [description, setDescription] = useState<string>('');
 
 
-    const [status, setStatus] = useState<ProjectStatus>('Pendiente'); // Estado inicial por defecto
+    const [status, setStatus] = useState<ProjectStatus>('pending'); // Estado inicial por defecto
+    const [billingType, setBillingType] = useState<'hourly' | 'fixed_price'>('fixed_price');
     const [dueDate, setDueDate] = useState<string>(''); // Formato 'YYYY-MM-DD'
     const [budget, setBudget] = useState<number | ''>(''); // Presupuesto opcional
 
@@ -77,6 +78,7 @@ export default function NewProjectPage() {
                 client_id: clientId,
                 description: description || undefined, // undefined para que Supabase use null si no hay descripción
                 status,
+                billing_type: billingType,
                 due_date: dueDate ? new Date(dueDate).toISOString() : undefined,
                 budget: budget === '' ? undefined : budget,
                 created_at: new Date().toISOString() // Set current timestamp
@@ -209,23 +211,41 @@ export default function NewProjectPage() {
                     ></textarea>
                 </div>
 
-                {/* Estado del Proyecto */}
-                <div>
-                    <label htmlFor="status" className="block text-sm font-medium text-foreground-secondary">
-                        Estado
-                    </label>
-                    <select
-                        id="status"
-                        name="status"
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value as ProjectStatus)}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 bg-background-secondary text-foreground-primary"
-                    >
-                        <option value="Pendiente">Pendiente</option>
-                        <option value="En Progreso">En Progreso</option>
-                        <option value="En Pausa">En Pausa</option>
-                        {/* Opcional: Finalizado/Archivado no deberían usarse al crear un proyecto */}
-                    </select>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Estado del Proyecto */}
+                    <div>
+                        <label htmlFor="status" className="block text-sm font-medium text-foreground-secondary">
+                            Estado
+                        </label>
+                        <select
+                            id="status"
+                            name="status"
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value as ProjectStatus)}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 bg-background-secondary text-foreground-primary"
+                        >
+                            <option value="pending">Pendiente</option>
+                            <option value="in_progress">En Progreso</option>
+                            <option value="on_hold">En Pausa</option>
+                        </select>
+                    </div>
+
+                    {/* Tipo de Facturación */}
+                    <div>
+                        <label htmlFor="billingType" className="block text-sm font-medium text-foreground-secondary">
+                            Tipo de Facturación
+                        </label>
+                        <select
+                            id="billingType"
+                            name="billingType"
+                            value={billingType}
+                            onChange={(e) => setBillingType(e.target.value as 'hourly' | 'fixed_price')}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 bg-background-secondary text-foreground-primary"
+                        >
+                            <option value="fixed_price">Precio Fijo</option>
+                            <option value="hourly">Por Hora</option>
+                        </select>
+                    </div>
                 </div>
 
                 {/* Fecha de Entrega */}

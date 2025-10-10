@@ -12,8 +12,8 @@ import IconApp from "@/app/components/icons/IconApp.svg";
 export default function TopBar() {
 
     const pathname = usePathname();
-    const paths = ['/', '/functions', '/prices', '/blog', '/contact']
-    const pathsPage = { '/': "Inicio", '/functions': "Funciones", '/prices': "Precios", '/blog': "Blog", '/contact': "Contacto" }
+    const paths = ['/', '/functions', '/prices']
+    const pathsPage = { '/': "Inicio", '/functions': "Funciones", '/prices': "Precios" }
 
 
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);

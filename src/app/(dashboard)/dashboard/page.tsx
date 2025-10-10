@@ -31,7 +31,7 @@ export default function DashboardPage() {
     const tasksDueToday = tasks.filter(task => task.due_date === 'Hoy').length;
 
 
-    const projectsInProgress = projects.filter(project => project.status === 'En Progreso').length;
+    const projectsInProgress = projects.filter(project => project.status === 'in_progress').length;
 
     useEffect(() => {
         // Aquí podrías cargar el perfil del usuario si es necesario
@@ -69,11 +69,11 @@ export default function DashboardPage() {
 
                 <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-down delay-100">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-foreground">{projects.length <= 1 ? "Proyecto Activo" : "Proyectos Activos"}</h3>
+                        <h3 className="text-lg font-semibold text-foreground">{projects.length === 1 ? "Proyecto Activo" : "Proyectos Activos"}</h3>
                         <TrendingUp size={24} className="text-blue-500" />
                     </div>
                     <p className="mt-4 text-3xl font-bold text-foreground">{projects.length}</p>
-                    <p className="mt-1 text-sm text-foreground-secondary">{projectsInProgress >= 1 ? projectsInProgress + " tareas en progreso" : ""}</p>
+                    <p className="mt-1 text-sm text-foreground-secondary">{projectsInProgress !== 1 ? projectsInProgress + " proyectos en progreso" : "1 proyecto en progreso"}</p>
                 </div>
 
                 <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-down delay-200">
@@ -81,7 +81,7 @@ export default function DashboardPage() {
                         <h3 className="text-lg font-semibold text-foreground">Tareas Pendientes</h3>
                         <CalendarCheck size={24} className="text-orange-500" />
                     </div>
-                    <p className="mt-4 text-3xl font-bold text-foreground">{tasks.filter(task => task.status === "Pendiente").length}</p>
+                    <p className="mt-4 text-3xl font-bold text-foreground">{tasks.filter(task => task.status === "pending").length}</p>
                     <p className="mt-1 text-sm text-foreground-secondary">{tasksDueToday >= 1 ? tasksDueToday + " vencen hoy" : ""}</p>
                 </div>
 
@@ -105,7 +105,7 @@ export default function DashboardPage() {
                         </Link>
                     </div>
                     <ul className="mt-4 space-y-4">
-                        {projects.filter(p => p.status === 'En Progreso' || p.status === 'Pendiente').map(project => (
+                        {projects.filter(p => p.status === 'in_progress' || p.status === 'pending').map(project => (
                             <li key={project.id} className="border-b border-foreground-secondary pb-4 last:border-b-0 last:pb-0">
                                 <Link href={`/dashboard/projects/${project.id}`} className="block hover:text-primary-hover transition-colors duration-200">
                                     <h3 className="text-lg font-medium text-foreground">{project.name}</h3>

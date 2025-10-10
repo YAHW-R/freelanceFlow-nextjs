@@ -31,13 +31,13 @@ export default function Feutures() {
                                     {icon === "folder" && "Gestión de Proyectos"}
                                     {icon === "clock" && "Control de Tiempo"}
                                     {icon === "dollar-sign" && "Facturación"}
-                                    {icon === "users" && "Gestión de Clientes"}
+                                    {icon === "users" && "Administración de Clientes"}
                                 </h3>
                                 <p className="mt-2 min-h-24 text-base text-foreground-secondary">
-                                    {icon === "folder" && "Organiza proyectos con milestones, tareas y seguimiento de progreso. Almacena todos los archivos relacionados."}
-                                    {icon === "clock" && "Timer integrado y reportes automáticos de horas trabajadas. Analiza tu productividad semanal/mensual."}
-                                    {icon === "dollar-sign" && "Genera facturas profesionales, sigue pagos y calcula impuestos. Integración con Stripe y PayPal."}
-                                    {icon === "users" && "Base de datos centralizada con historial de proyectos y comunicaciones. Contratos digitales incluidos."}
+                                    {icon === "folder" && "Organiza proyectos con kanban, tareas y seguimiento de progreso."}
+                                    {icon === "clock" && "Reportes de horas trabajadas. Analiza tu productividad semanal/mensual."}
+                                    {icon === "dollar-sign" && "Genera facturas profesionales y realiza avisos, analiza ingresos y gestiona los presupuestos."}
+                                    {icon === "users" && "Integración con datos de clientes, reportes y avisos de pago con informes de horas trabajadas y tareas realizadas."}
                                 </p>
                             </div>
                         </ScrollAnimation>

@@ -63,8 +63,8 @@ export default function DashboardPage() {
                         <h3 className="text-lg font-semibold bg-background-secondary">Ingresos del Mes</h3>
                         <DollarSign size={24} className="text-green-acent" />
                     </div>
-                    <p className="mt-4 text-3xl font-bold text-foreground">$12,500.00</p>
-                    <p className="mt-1 text-sm text-foreground-secondary">+15% respecto al mes anterior</p>
+                    <p className="mt-4 text-3xl font-bold text-foreground">$0</p>
+                    {/*<p className="mt-1 text-sm text-foreground-secondary">+15% respecto al mes anterior</p>*/}
                 </div>
 
                 <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-down delay-100">

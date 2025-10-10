@@ -28,6 +28,8 @@ export interface Profile {
     subcirption_plan?: string;
     location?: string;
     updated_at?: string;
+    total_income?: number;
+    monthly_icome?: number;
     created_at: string;
 }
 

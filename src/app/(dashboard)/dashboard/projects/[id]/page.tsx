@@ -66,8 +66,7 @@ export default async function ProjectPage(props: { params: Promise<{ id: string 
             case 'in_progress': return { icon: <Clock size={20} className="text-blue-500" />, color: 'text-blue-500', text: 'En Progreso' };
             case 'completed': return { icon: <CheckCircle size={20} className="text-green-500" />, color: 'text-green-500', text: 'Finalizado' };
             case 'pending': return { icon: <PauseCircle size={20} className="text-yellow-500" />, color: 'text-yellow-500', text: 'Pendiente' };
-            case 'archived': return { icon: <Archive size={20} className="text-gray-500" />, color: 'text-gray-500', text: 'Archivado' };
-            case 'on_hold': return { icon: <PauseCircle size={20} className="text-orange-500" />, color: 'text-orange-500', text: 'En Pausa' };
+            case 'in_pause': return { icon: <PauseCircle size={20} className="text-orange-500" />, color: 'text-orange-500', text: 'En Pausa' };
             default: return { icon: <Info size={20} className="text-gray-400" />, color: 'text-gray-400', text: status };
         }
     };

@@ -9,7 +9,7 @@ import TaskKanbanColumn from '@/app/components/tasks/TaskKanbanColumn';
 import { getTasksUser as getTasksForUser, updateTaskStatus } from '@/app/actions/taskActions'; // Importa tus Server Actions
 import { TaskWithProjectName, TaskStatus } from '@/lib/types'; // Asegúrate de que los tipos estén bien importados
 
-export default function KanbanPage() {
+export default function TasksPage() {
     const [tasks, setTasks] = useState<TaskWithProjectName[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -27,7 +27,7 @@ export default function KanbanPage() {
             setLoading(true);
             try {
                 const fetchedTasks = await getTasksForUser();
-                setTasks(fetchedTasks);
+                setTasks(fetchedTasks || []); // Asegura que 'tasks' sea siempre un array
             } catch (err: unknown) {
                 if (err instanceof Error) {
                     console.error('Error al cargar tareas para Kanban:', err);
@@ -169,7 +169,7 @@ export default function KanbanPage() {
     return (
         <div className="flex flex-col h-[calc(100vh-120px)] space-y-6"> {/* Altura ajustada */}
             {/* Encabezado y Botones de Acción */}
-            <div className="flex items-center justify-between animate-fade-in-down">
+            <div className="flex items-center justify-between animate-fade-in-down ">
                 <h1 className="text-3xl font-bold text-foreground-primary">Tablero Kanban</h1>
                 <div className="flex items-center space-x-3">
                     <Link

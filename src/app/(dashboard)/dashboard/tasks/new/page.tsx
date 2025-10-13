@@ -4,11 +4,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, PlusCircle, Calendar, Flag, ListTodo } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { createTask } from '@/app/actions/taskActions';
 import { getProjects } from '@/app/actions/projectsActions';
 import { Project } from '@/lib/types';
-import type { TaskStatus, TaskPriority, Task, CreateTask } from '@/lib/types';
+import type { TaskStatus, TaskPriority, Task } from '@/lib/types';
 import Link from 'next/link';
 
 export default function NewTaskPage() {
@@ -19,11 +19,10 @@ export default function NewTaskPage() {
     const [error, setError] = useState<string | null>(null);
 
     // Estados del formulario
-    const [user_id, setUserId] = useState("")// Reemplaza con la lógica para obtener el ID del usuario actual
     const [name, setName] = useState<string>('');
     const [projectId, setProjectId] = useState<string>(''); // ID del proyecto seleccionado (o vacío para tarea personal)
     const [description, setDescription] = useState<string>('');
-    const [status, setStatus] = useState<TaskStatus>('Pendiente'); // Estado inicial por defecto
+    const [status, setStatus] = useState<TaskStatus>('pending'); // Estado inicial por defecto
     const [dueDate, setDueDate] = useState<string>(''); // Formato 'YYYY-MM-DD'
     const [priority, setPriority] = useState<TaskPriority>('Media'); // Prioridad por defecto
 
@@ -35,7 +34,6 @@ export default function NewTaskPage() {
                 setProjects(fetchedProjects);
                 if (fetchedProjects.length > 0) {
                     setProjectId(fetchedProjects[0].id);
-                    setUserId(fetchedProjects[0].user_id) // Selecciona el primer proyecto por defecto
                 } else {
                     // Si no hay proyectos, redirigir
                     router.push('/dashboard/projects/new?redirectBack=/dashboard/tasks/new');
@@ -69,10 +67,9 @@ export default function NewTaskPage() {
         }
 
         try {
-            const formData: CreateTask = {
+            const formData: Omit<Task, 'id' | 'created_at' | 'user_id'> = {
                 title: name.trim(),
-                user_id,
-                project_id: projectId, // undefined para que Supabase use null si no hay proyecto
+                project_id: projectId,
                 description: description ? description.trim() : undefined,
                 status,
                 due_date: dueDate,

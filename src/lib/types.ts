@@ -1,6 +1,6 @@
 // app/components/types.ts o app/lib/types.ts
 
-export type ProjectStatus = 'in_progress' | 'completed' | 'pending' | 'archived' | 'on_hold';
+export type ProjectStatus = 'in_progress' | 'completed' | 'pending' | 'in_pause';
 
 export interface Project {
     id: string;
@@ -33,6 +33,14 @@ export interface Profile {
     monthly_icome?: number;
     created_at: string;
 }
+export interface UpdateProfileFormData {
+    username: string | null;
+    full_name: string | null;
+    avatar_url: string | null;
+    skills: string | null;
+    bio: string | null;
+}
+
 
 export interface Client {
     id: string;
@@ -63,28 +71,22 @@ export interface Task {
     status: TaskStatus | string;
     priority: TaskPriority | string;
     due_date: string;
+    updated_at?: string;
     created_at: string;
 }
-
-export interface CreateTask {
-    project_id: string;
-    user_id: string;
-    title: string;
-    description?: string;
-    status: TaskStatus | string;
-    priority: TaskPriority | string;
-    due_date: string;
-}
-
 
 export interface TaskWithProjectName extends Task {
     project_name?: string;
 }
 
-export interface UpdateProfileFormData {
-    username: string | null;
-    full_name: string | null;
-    avatar_url: string | null;
-    skills: string | null;
-    bio: string | null;
+
+export interface TimeEntries {
+    id: string;
+    user_id: string;
+    project_id: string;
+    task_id: string;
+    description?: string;
+    duration_seconds: number;
+    entry_date: string;
+    created_at: string;
 }

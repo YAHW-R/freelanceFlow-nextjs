@@ -14,9 +14,8 @@ import {
     Settings,
     ChevronLeft,
     ChevronRight,
+    Clock
 } from 'lucide-react';
-
-import { Profile } from '../../../lib/types';
 
 import IconApp from '@/app/components/icons/IconApp.svg';
 
@@ -27,8 +26,9 @@ const navItems = [
     { href: '/dashboard/projects', label: 'Proyectos', icon: FolderKanban },
     { href: '/dashboard/tasks', label: 'Tareas', icon: ListTodo },
     { href: '/dashboard/clients', label: 'Clientes', icon: Users },
-    { href: '/dashboard/invoices', label: 'Facturas', icon: FileText },
+    { href: '/dashboard/time-traker', label: 'Time Tracker', icon: Clock },
     { href: '/dashboard/metrics', label: 'Métricas', icon: AreaChart },
+    { href: '/dashboard/invoices', label: 'Facturas', icon: FileText },
 ];
 
 const secondaryNavItems = [

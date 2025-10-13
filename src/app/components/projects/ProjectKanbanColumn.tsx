@@ -16,7 +16,7 @@ interface ProjectKanbanColumnProps {
 const statusConfig = {
     pending: { title: 'Pendiente', color: 'bg-yellow-500' },
     in_progress: { title: 'En Progreso', color: 'bg-blue-500' },
-    on_hold: { title: 'En Pausa', color: 'bg-orange-500' },
+    in_pause: { title: 'En Pausa', color: 'bg-orange-500' },
     completed: { title: 'Completado', color: 'bg-green-500' },
     archived: { title: 'Archivado', color: 'bg-gray-500' },
 };

@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server"
 
-import type { Task, TaskWithProjectName, CreateTask } from "@/lib/types"
+import type { Task, TaskWithProjectName } from "@/lib/types"
 import { redirect } from "next/navigation"
 
 export async function getTasksUser() {
@@ -53,7 +53,7 @@ export async function updateTaskStatus(taskId: string, newStatus: string) {
 }
 
 
-export async function createTask(task: CreateTask) {
+export async function createTask(task: Omit<Task, 'id' | 'created_at' | 'user_id'>) {
     const supabase = await createClient()
     const user = supabase.auth.getUser()
     if (!user) {
@@ -76,4 +76,22 @@ export async function createTask(task: CreateTask) {
     }
 
     return data as Task
+}
+
+export async function getTasksByProject(projectId: string): Promise<Task[]> {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Usuario no autenticado.");
+
+    const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('project_id', projectId)
+        .eq('user_id', user.id);
+
+    if (error) {
+        console.error("Error fetching tasks by project:", error);
+        throw new Error("No se pudieron obtener las tareas del proyecto.");
+    }
+    return data || [];
 }

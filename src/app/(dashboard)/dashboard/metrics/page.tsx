@@ -3,36 +3,127 @@
 'use client'; // Client Component para gráficos interactivos
 
 import { useState, useEffect } from 'react';
-import { BarChart2, PieChart, TrendingUp, Clock, Target } from 'lucide-react';
+import { BarChart2, PieChart, TrendingUp, Clock, Target, AlertCircle } from 'lucide-react';
+import { getProjects } from '@/app/actions/projectsActions';
+import { getClients } from '@/app/actions/clientActions';
+import { getTasksUser } from '@/app/actions/taskActions';
+import { getTimeEntries } from '@/app/actions/timeTrakerActions'; // Asumimos que esta acción existe
+import { Project, Client, Task, TimeEntries } from '@/lib/types';
+
 // Importa tus componentes de gráfico aquí (ej. de Recharts, Nivo, Chart.js)
 // import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
+type Timeframe = '7d' | '30d' | '90d' | 'ytd';
+
+interface Metrics {
+    income: number;
+    activeProjects: number;
+    completedTasks: number;
+    loggedHours: number;
+    topProjects: (Project & { clientName?: string })[];
+}
+
+// Helper para obtener el rango de fechas
+const getDateRange = (timeframe: Timeframe): { from: Date, to: Date } => {
+    const to = new Date();
+    const from = new Date();
+
+    switch (timeframe) {
+        case '7d':
+            from.setDate(to.getDate() - 7);
+            break;
+        case '30d':
+            from.setDate(to.getDate() - 30);
+            break;
+        case '90d':
+            from.setDate(to.getDate() - 90);
+            break;
+        case 'ytd':
+            from.setFullYear(to.getFullYear(), 0, 1);
+            break;
+    }
+    from.setHours(0, 0, 0, 0);
+    to.setHours(23, 59, 59, 999);
+    return { from, to };
+};
+
 export default function MetricsPage() {
     const [loading, setLoading] = useState<boolean>(true);
-    const [timeframe, setTimeframe] = useState<'7d' | '30d' | '90d' | 'ytd'>('30d'); // Periodo de tiempo
-
-    // Datos de ejemplo para gráficos
-    const incomeData = [
-        { name: 'Ene', income: 4000 }, { name: 'Feb', income: 3000 }, { name: 'Mar', income: 5000 },
-        { name: 'Abr', income: 4500 }, { name: 'May', income: 6000 }, { name: 'Jun', income: 5500 },
-    ];
-    const projectStatusData = [
-        { name: 'En Progreso', value: 5 },
-        { name: 'Finalizados', value: 12 },
-        { name: 'Pendientes', value: 3 },
-    ];
+    const [error, setError] = useState<string | null>(null);
+    const [timeframe, setTimeframe] = useState<Timeframe>('30d'); // Periodo de tiempo
+    const [metrics, setMetrics] = useState<Metrics>({
+        income: 0,
+        activeProjects: 0,
+        completedTasks: 0,
+        loggedHours: 0,
+        topProjects: [],
+    });
 
     useEffect(() => {
-        // Aquí cargarías tus métricas reales de Supabase
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 1000); // Simula carga
-        return () => clearTimeout(timer);
-    }, [timeframe]); // Recargar si cambia el periodo de tiempo
+        async function fetchMetrics() {
+            setLoading(true);
+            setError(null);
+            try {
+                const { from, to } = getDateRange(timeframe);
+
+                // Fetch all data in parallel
+                const [projects, clients, tasks, timeEntries] = await Promise.all([
+                    getProjects(),
+                    getClients(),
+                    getTasksUser(),
+                    getTimeEntries({ from: from.toISOString(), to: to.toISOString() }) // Asume que getTimeEntries acepta un rango
+                ]);
+
+                // --- Calculate Metrics ---
+
+                // 1. Income: Sum of budgets for projects completed within the timeframe
+                // Nota: Esto es una aproximación. El cálculo real puede ser más complejo.
+                const income = projects
+                    .filter(p => p.status === 'completed' && p.due_date && new Date(p.due_date) >= from && new Date(p.due_date) <= to)
+                    .reduce((acc, p) => acc + (p.budget || 0), 0);
+
+                // 2. Active Projects: Total count of projects in progress
+                const activeProjects = projects.filter(p => p.status === 'in_progress').length;
+
+                // 3. Completed Tasks: Count of tasks completed within the timeframe
+                // Asumimos que la fecha de completado es la de la entrada de tiempo si no hay otro campo
+                const completedTasks = tasks.filter(t => t.status === 'completed' && t.updated_at && new Date(t.updated_at) >= from && new Date(t.updated_at) <= to).length;
+
+                // 4. Logged Hours: Sum of all time entries in the period
+                const totalSeconds = timeEntries.reduce((acc, entry) => acc + entry.duration_seconds, 0);
+                const loggedHours = totalSeconds / 3600;
+
+                // 5. Top Projects by Budget
+                const topProjects = [...projects]
+                    .sort((a, b) => (b.budget || 0) - (a.budget || 0))
+                    .slice(0, 5)
+                    .map(p => ({
+                        ...p,
+                        clientName: clients.find(c => c.id === p.client_id)?.name || 'N/A'
+                    }));
+
+                setMetrics({
+                    income,
+                    activeProjects,
+                    completedTasks,
+                    loggedHours: parseFloat(loggedHours.toFixed(2)),
+                    topProjects,
+                });
+
+            } catch (err) {
+                console.error("Error fetching metrics:", err);
+                setError("No se pudieron cargar las métricas. Por favor, inténtalo de nuevo.");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchMetrics();
+    }, [timeframe]);
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[calc(100vh-128px)] text-gray-600">
+            <div className="flex flex-col items-center justify-center min-h-[calc(100vh-128px)] text-foreground-secondary">
                 <div className="flex items-center space-x-2 text-primary-hover">
                     <svg className="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -40,6 +131,18 @@ export default function MetricsPage() {
                     </svg>
                     <p className="text-xl font-medium">Cargando métricas...</p>
                 </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[calc(100vh-128px)] text-red-500 bg-red-500/10 p-8 rounded-lg">
+                <AlertCircle size={40} />
+                <p className="text-xl font-medium mt-4">{error}</p>
+                <button onClick={() => setLoading(true)} className="mt-4 rounded-md bg-primary py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-primary-hover">
+                    Reintentar
+                </button>
             </div>
         );
     }
@@ -54,7 +157,7 @@ export default function MetricsPage() {
                     <select
                         id="timeframe"
                         value={timeframe}
-                        onChange={(e) => setTimeframe(e.target.value as typeof timeframe)}
+                        onChange={(e) => setTimeframe(e.target.value as Timeframe)}
                         className="rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary text-sm text-foreground-primary bg-background-secondary p-2"
                     >
                         <option value="7d">Últimos 7 Días</option>
@@ -70,28 +173,28 @@ export default function MetricsPage() {
                 <div className="bg-background-secondary rounded-lg shadow-md p-6 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-medium text-foreground-secondary">Ingresos ({timeframe === 'ytd' ? 'Año' : 'Periodo'})</p>
-                        <p className="text-2xl font-bold text-primary mt-1">€12,345</p>
+                        <p className="text-2xl font-bold text-primary mt-1">€{metrics.income.toLocaleString('es-ES')}</p>
                     </div>
                     <TrendingUp size={36} className="text-primary-hover opacity-70" />
                 </div>
                 <div className="bg-background-secondary rounded-lg shadow-md p-6 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-medium text-foreground-secondary">Proyectos Activos</p>
-                        <p className="text-2xl font-bold text-foreground-primary mt-1">5</p>
+                        <p className="text-2xl font-bold text-foreground-primary mt-1">{metrics.activeProjects}</p>
                     </div>
                     <BarChart2 size={36} className="text-secondary opacity-70" />
                 </div>
                 <div className="bg-background-secondary rounded-lg shadow-md p-6 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-medium text-foreground-secondary">Tareas Completadas</p>
-                        <p className="text-2xl font-bold text-foreground-primary mt-1">42</p>
+                        <p className="text-2xl font-bold text-foreground-primary mt-1">{metrics.completedTasks}</p>
                     </div>
                     <Target size={36} className="text-green-600 opacity-70" />
                 </div>
                 <div className="bg-background-secondary rounded-lg shadow-md p-6 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-medium text-foreground-secondary">Horas Registradas</p>
-                        <p className="text-2xl font-bold text-foreground-primary mt-1">160</p>
+                        <p className="text-2xl font-bold text-foreground-primary mt-1">{metrics.loggedHours}</p>
                     </div>
                     <Clock size={36} className="text-blue-600 opacity-70" />
                 </div>
@@ -102,7 +205,7 @@ export default function MetricsPage() {
                 <div className="bg-background-secondary rounded-lg shadow-md p-6">
                     <h2 className="text-xl font-bold text-foreground-primary mb-4 flex items-center space-x-2">
                         <BarChart2 size={20} className="text-primary" />
-                        <span>Ingresos Mensuales</span>
+                        <span>Productividad (Horas/Día)</span>
                     </h2>
                     <div className="h-64 flex items-center justify-center text-foreground-secondary">
                         {/* Aquí iría tu componente de gráfico de líneas/barras, ej: */}
@@ -116,14 +219,14 @@ export default function MetricsPage() {
                 <Line type="monotone" dataKey="income" stroke="#06B6D4" activeDot={{ r: 8 }} />
               </LineChart>
             </ResponsiveContainer> */}
-                        <p>Gráfico de Ingresos (Placeholder)</p>
+                        <p>Gráfico de Productividad (Placeholder)</p>
                     </div>
                 </div>
 
                 <div className="bg-background-secondary rounded-lg shadow-md p-6">
                     <h2 className="text-xl font-bold text-foreground-primary mb-4 flex items-center space-x-2">
                         <PieChart size={20} className="text-primary" />
-                        <span>Estado de Proyectos</span>
+                        <span>Estado de Proyectos (Total)</span>
                     </h2>
                     <div className="h-64 flex items-center justify-center text-foreground-secondary">
                         {/* Aquí iría tu componente de gráfico de pastel/dona, ej: */}
@@ -143,32 +246,35 @@ export default function MetricsPage() {
             <div className="bg-background-secondary rounded-lg shadow-md p-6 animate-fade-in-up animation-delay-300">
                 <h2 className="text-xl font-bold text-foreground-primary mb-4 flex items-center space-x-2">
                     <BarChart2 size={20} className="text-primary" />
-                    <span>Top Proyectos por Presupuesto</span>
+                    <span>Top 5 Proyectos por Presupuesto</span>
                 </h2>
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-background-secondary">
                             <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proyecto</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Presupuesto</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider">Proyecto</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider">Cliente</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider">Presupuesto</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider">Estado</th>
                             </tr>
                         </thead>
                         <tbody className="bg-background-secondary divide-y divide-gray-200">
-                            {/* Ejemplo de datos, reemplazar con datos reales */}
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground-primary">Desarrollo de API para App Móvil</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground-secondary">Tech Innovators S.A.</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground-secondary">€8,000</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm"><span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">En Progreso</span></td>
-                            </tr>
-                            <tr>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground-primary">Consultoría de Estrategia Digital</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground-secondary">Startup Growth</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground-secondary">€5,000</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm"><span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Pendiente</span></td>
-                            </tr>
+                            {metrics.topProjects.length > 0 ? metrics.topProjects.map(project => (
+                                <tr key={project.id}>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground-primary">{project.name}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground-secondary">{project.clientName}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground-secondary">€{(project.budget || 0).toLocaleString('es-ES')}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${project.status === 'in_progress' ? 'bg-blue-100 text-blue-800' : project.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                            {project.status.replace('_', ' ')}
+                                        </span>
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr>
+                                    <td colSpan={4} className="px-6 py-4 text-center text-sm text-foreground-secondary">No hay proyectos para mostrar.</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

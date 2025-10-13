@@ -226,7 +226,7 @@ export default function NewProjectPage() {
                         >
                             <option value="pending">Pendiente</option>
                             <option value="in_progress">En Progreso</option>
-                            <option value="on_hold">En Pausa</option>
+                            <option value="in_pause">En Pausa</option>
                         </select>
                     </div>
 

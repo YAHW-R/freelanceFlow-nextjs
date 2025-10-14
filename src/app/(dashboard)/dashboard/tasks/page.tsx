@@ -173,12 +173,6 @@ export default function TasksPage() {
                 <h1 className="text-3xl font-bold text-foreground-primary">Tablero Kanban</h1>
                 <div className="flex items-center space-x-3">
                     <Link
-                        href="/dashboard/tasks"
-                        className="inline-flex items-center rounded-md border border-gray-300 bg-background-secondary px-4 py-2 text-sm font-medium text-foreground-primary shadow-sm transition-colors duration-200 hover:bg-gray-100"
-                    >
-                        <LayoutDashboard size={18} className="mr-2" /> Vista de Lista
-                    </Link>
-                    <Link
                         href="/dashboard/tasks/new"
                         className="inline-flex items-center rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:bg-primary-hover"
                     >

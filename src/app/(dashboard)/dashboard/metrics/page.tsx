@@ -90,7 +90,7 @@ export default function MetricsPage() {
                 const completedTasks = tasks.filter(t => t.status === 'completed' && t.updated_at && new Date(t.updated_at) >= from && new Date(t.updated_at) <= to).length;
 
                 // 4. Logged Hours: Sum of all time entries in the period
-                const totalSeconds = timeEntries.reduce((acc, entry) => acc + entry.duration_seconds, 0);
+                const totalSeconds = timeEntries.reduce((acc, entry) => acc + entry.duration_minutes * 60, 0);
                 const loggedHours = totalSeconds / 3600;
 
                 // 5. Top Projects by Budget

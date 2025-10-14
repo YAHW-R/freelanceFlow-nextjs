@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Calendar, CheckCircle2, CircleDashed, Clock, Projector, Flag } from 'lucide-react';
-import { Task, TaskPriority, TaskStatus } from '@/lib/types'; // Asegúrate de que los tipos estén bien importados
+import { Task, TaskPriority, TaskStatus } from '@/lib/types';
+import { TASK_STATUS_MAP } from '@/lib/global';
 
 interface TaskCardProps {
     task: Task;
@@ -8,14 +9,12 @@ interface TaskCardProps {
 
 const getStatusStyles = (status: TaskStatus) => {
     switch (status) {
-        case 'Pendiente':
+        case 'pending':
             return 'bg-blue-100 text-blue-800';
-        case 'En Progreso':
+        case 'in_progress':
             return 'bg-yellow-100 text-yellow-800';
-        case 'Completada':
+        case 'completed':
             return 'bg-green-100 text-green-800';
-        case 'Completada':
-            return 'bg-red-100 text-red-800';
         default:
             return 'bg-gray-100 text-gray-800';
     }
@@ -36,9 +35,9 @@ const getPriorityStyles = (priority: TaskPriority) => {
 
 const getStatusIcon = (status: TaskStatus) => {
     switch (status) {
-        case 'Pendiente': return <CircleDashed size={16} className="text-blue-600" />;
-        case 'En Progreso': return <Clock size={16} className="text-yellow-600" />;
-        case 'Completada': return <CheckCircle2 size={16} className="text-green-600" />;
+        case 'pending': return <CircleDashed size={16} className="text-blue-600" />;
+        case 'in_progress': return <Clock size={16} className="text-yellow-600" />;
+        case 'completed': return <CheckCircle2 size={16} className="text-green-600" />;
         default: return <CircleDashed size={16} className="text-gray-600" />;
     }
 };
@@ -56,7 +55,7 @@ export default function TaskCard({ task }: TaskCardProps) {
                 </h2>
                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusStyles(task.status as TaskStatus)} flex items-center space-x-1`}>
                     {getStatusIcon(task.status as TaskStatus)}
-                    <span>{task.status}</span>
+                    <span>{TASK_STATUS_MAP[task.status as TaskStatus]}</span>
                 </span>
             </div>
 

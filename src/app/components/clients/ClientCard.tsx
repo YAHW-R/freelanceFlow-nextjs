@@ -16,10 +16,10 @@ export default function ClientCard({ client }: ClientCardProps) {
                     {client.name}
                 </Link>
             </h2>
-            {client.contactPerson && (
+            {client.contact_person && (
                 <p className="text-foreground-secondary flex items-center space-x-2">
                     <User size={16} className="text-secondary" />
-                    <span>{client.contactPerson}</span>
+                    <span>{client.contact_person}</span>
                 </p>
             )}
             {client.email && (

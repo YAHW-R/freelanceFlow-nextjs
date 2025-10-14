@@ -68,7 +68,7 @@ export interface Task {
     user_id: string;
     title: string;
     description?: string;
-    status: TaskStatus | string;
+    status: TaskStatus;
     priority: TaskPriority | string;
     due_date: string;
     updated_at?: string;

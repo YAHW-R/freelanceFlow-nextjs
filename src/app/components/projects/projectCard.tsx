@@ -1,19 +1,18 @@
 import Link from 'next/link';
-import { MoreVertical, CheckCircle, Clock, PauseCircle, Archive } from 'lucide-react';
+import { MoreVertical, CheckCircle, Clock, PauseCircle } from 'lucide-react';
 import type { ClientOptions, Project, ProjectStatus } from '@/lib/types';
+import { PROJECT_STATUS_MAP } from '@/lib/global';
 
 // Función auxiliar para obtener el color del estado
 const getStatusColor = (status: ProjectStatus) => {
     switch (status) {
-        case 'En Progreso':
+        case 'in_progress':
             return 'bg-blue-100 text-blue-800';
-        case 'Finalizado':
+        case 'completed':
             return 'bg-green-100 text-green-800';
-        case 'Pendiente':
+        case 'pending':
             return 'bg-yellow-100 text-yellow-800';
-        case 'Archivado':
-            return 'bg-gray-100 text-gray-800';
-        case 'En Pausa':
+        case 'in_pause':
             return 'bg-orange-100 text-orange-800';
         default:
             return 'bg-gray-100 text-gray-800';
@@ -23,15 +22,13 @@ const getStatusColor = (status: ProjectStatus) => {
 // Función auxiliar para obtener el icono del estado
 const getStatusIcon = (status: ProjectStatus) => {
     switch (status) {
-        case 'En Progreso':
+        case 'in_progress':
             return <Clock size={16} className="mr-1" />;
-        case 'Finalizado':
+        case 'completed':
             return <CheckCircle size={16} className="mr-1" />;
-        case 'Pendiente':
-            return <Clock size={16} className="mr-1" />; // Podrías usar un icono diferente si quieres
-        case 'Archivado':
-            return <Archive size={16} className="mr-1" />;
-        case 'En Pausa':
+        case 'pending':
+            return <Clock size={16} className="mr-1" />;
+        case 'in_pause':
             return <PauseCircle size={16} className="mr-1" />;
         default:
             return null;
@@ -50,8 +47,8 @@ export default function ProjectCard({ project, clients }: ProjectCardProps) {
     const diffTime = dueDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    const isOverdue = diffDays < 0 && project.status !== 'Finalizado';
-    const isDueSoon = diffDays > 0 && diffDays <= 7 && project.status !== 'Finalizado';
+    const isOverdue = diffDays < 0 && project.status !== 'completed';
+    const isDueSoon = diffDays > 0 && diffDays <= 7 && project.status !== 'completed';
 
     const clientName = clients.find(client => client.id === project.client_id)?.name || 'Desconocido';
 
@@ -74,7 +71,7 @@ export default function ProjectCard({ project, clients }: ProjectCardProps) {
             {/* Estado del Proyecto */}
             <div className={`mt-4 inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(project.status)}`}>
                 {getStatusIcon(project.status)}
-                {project.status}
+                {PROJECT_STATUS_MAP[project.status]}
             </div>
 
             {/* Barra de Progreso */}

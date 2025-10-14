@@ -35,7 +35,7 @@ export default function ManualTimeEntryPage() {
         async function fetchProjects() {
             try {
                 const activeProjects = await getProjects();
-                const filtered = activeProjects.filter(p => p.status === 'in_progress' || p.status === 'on_hold' || p.status === 'pending');
+                const filtered = activeProjects.filter(p => p.status === 'in_progress' || p.status === 'in_pause' || p.status === 'pending');
                 setProjects(filtered);
             } catch {
                 setError('No se pudieron cargar los proyectos.');

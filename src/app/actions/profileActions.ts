@@ -43,8 +43,7 @@ export async function updateUserProfile(profileData: UpdateProfileFormData) {
         redirect('/login');
     }
 
-    // Convierte la cadena de habilidades en un array de strings
-    const skillsArray = profileData.skills ? profileData.skills.split(',').map(skill => skill.trim()) : null;
+    // Convierte la cadena de habilidades en un array de string
 
     const { error } = await supabase.from('profiles').upsert({
         id: user.id,
@@ -52,7 +51,7 @@ export async function updateUserProfile(profileData: UpdateProfileFormData) {
         full_name: profileData.full_name,
         avatar_url: profileData.avatar_url,
         bio: profileData.bio,
-        skills: skillsArray,
+        skills: profileData.skills,
         updated_at: new Date().toISOString(),
     });
 

@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { Calendar, CheckCircle2, CircleDashed, Clock, Projector, Flag } from 'lucide-react';
-import { Task, TaskPriority, TaskStatus } from '@/lib/types'; // Usa tus tipos globales
+import { Task, TaskPriority, TaskStatus } from '@/lib/types';
+import { TASK_STATUS_MAP } from '@/lib/global';
 
 interface KanbanTaskCardProps {
     task: Task;
@@ -11,11 +12,11 @@ interface KanbanTaskCardProps {
 
 const getStatusStyles = (status: TaskStatus) => {
     switch (status) {
-        case 'Pendiente':
+        case 'pending':
             return 'bg-blue-100 text-blue-800';
-        case 'En Progreso':
+        case 'in_progress':
             return 'bg-yellow-100 text-yellow-800';
-        case 'Completada':
+        case 'completed':
             return 'bg-green-100 text-green-800';
         default:
             return 'bg-gray-100 text-gray-800';
@@ -37,9 +38,9 @@ const getPriorityStyles = (priority: TaskPriority) => {
 
 const getStatusIcon = (status: TaskStatus) => {
     switch (status) {
-        case 'Pendiente': return <CircleDashed size={16} className="text-blue-600" />;
-        case 'En Progreso': return <Clock size={16} className="text-yellow-600" />;
-        case 'Completada': return <CheckCircle2 size={16} className="text-green-600" />;
+        case 'pending': return <CircleDashed size={16} className="text-blue-600" />;
+        case 'in_progress': return <Clock size={16} className="text-yellow-600" />;
+        case 'completed': return <CheckCircle2 size={16} className="text-green-600" />;
         default: return <CircleDashed size={16} className="text-gray-600" />;
     }
 };
@@ -86,19 +87,9 @@ export default function KanbanTaskCard({ task, onDragStart }: KanbanTaskCardProp
                 {/* El estado ya está implícito en la columna, pero se puede mostrar si se desea */}
                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusStyles(task.status as TaskStatus)} flex items-center space-x-1`}>
                     {getStatusIcon(task.status as TaskStatus)}
-                    <span>{task.status}</span>
+                    <span>{TASK_STATUS_MAP[task.status as TaskStatus]}</span>
                 </span>
             </div>
-
-            {/* Opcional: Botón de ver detalles si el Link del título no es suficiente */}
-            {/* <div className="mt-auto flex justify-end">
-        <Link
-          href={`/dashboard/tasks/${task.id}`}
-          className="text-xs font-medium text-primary hover:underline transition-colors duration-200"
-        >
-          Ver Detalles
-        </Link>
-      </div> */}
         </div>
     );
 }

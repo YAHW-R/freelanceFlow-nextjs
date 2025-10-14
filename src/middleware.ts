@@ -4,6 +4,8 @@ import { createClient } from './lib/supabase/server'
 
 const publicPaths = [
     '/register/check-email',
+    '/login',
+    '/register',
     '/auth/callback',
     '/forgot-password',
     '/reset-password',
@@ -16,8 +18,6 @@ const publicPaths = [
     '/docs',
 ]
 
-const authPaths = ['/login', '/register']
-
 
 
 export const middleware = async (request: NextRequest) => {
@@ -28,7 +28,7 @@ export const middleware = async (request: NextRequest) => {
 
     const { data: { user } } = await supabase.auth.getUser()
 
-    if ((!publicPaths.includes(pathname) || !authPaths.includes(pathname)) && !user) {
+    if (!publicPaths.includes(pathname) && !user) {
         const cloneUrl = url.clone()
         cloneUrl.pathname = '/login'
         cloneUrl.searchParams.set('redirectedFrom', pathname)

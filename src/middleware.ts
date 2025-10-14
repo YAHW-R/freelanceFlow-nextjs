@@ -35,12 +35,6 @@ export const middleware = async (request: NextRequest) => {
         return NextResponse.redirect(cloneUrl)
     }
 
-    if (user && authPaths.includes(pathname)) {
-        const cloneUrl = url.clone()
-        cloneUrl.pathname = '/dashboard'
-        return NextResponse.redirect(cloneUrl)
-    }
-
     return NextResponse.next()
 }
 

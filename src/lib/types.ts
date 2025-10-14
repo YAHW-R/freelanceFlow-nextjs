@@ -86,7 +86,7 @@ export interface TimeEntries {
     project_id: string;
     task_id: string;
     description?: string;
-    duration_seconds: number;
+    duration_minutes: number;
     entry_date: string;
     created_at: string;
 }

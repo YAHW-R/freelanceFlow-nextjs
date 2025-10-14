@@ -86,7 +86,7 @@ export default function ManualTimeEntryPage() {
             await createTimeEntry({
                 project_id: selectedProjectId,
                 task_id: selectedTaskId,
-                duration_seconds: durationMinutes * 60,
+                duration_minutes: durationMinutes,
                 description: description || undefined,
                 entry_date: new Date(entryDate).toISOString(),
             });
@@ -119,14 +119,14 @@ export default function ManualTimeEntryPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label htmlFor="project" className="block text-sm font-medium text-foreground-secondary">Proyecto *</label>
-                        <select id="project" value={selectedProjectId} onChange={(e) => setSelectedProjectId(e.target.value)} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        <select id="project" value={selectedProjectId} onChange={(e) => setSelectedProjectId(e.target.value)} required className="mt-1 block w-full rounded-md border-foreground-secondary text-foreground bg-background-secondary shadow-sm p-2">
                             <option value="">{loadingProjects ? 'Cargando...' : 'Selecciona un proyecto'}</option>
                             {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                         </select>
                     </div>
                     <div>
                         <label htmlFor="task" className="block text-sm font-medium text-foreground-secondary">Tarea *</label>
-                        <select id="task" value={selectedTaskId} onChange={(e) => setSelectedTaskId(e.target.value)} required disabled={!selectedProjectId || loadingTasks} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2">
+                        <select id="task" value={selectedTaskId} onChange={(e) => setSelectedTaskId(e.target.value)} required disabled={!selectedProjectId || loadingTasks} className="mt-1 block w-full rounded-md border-foreground-secondary text-foreground bg-background-secondary shadow-sm p-2">
                             <option value="">{loadingTasks ? 'Cargando...' : 'Selecciona una tarea'}</option>
                             {tasks.map(t => <option key={t.id} value={t.id}>{t.title}</option>)}
                         </select>

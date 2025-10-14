@@ -20,7 +20,7 @@ export async function createTimeEntry(payload: Omit<TimeEntries, 'id' | 'user_id
             project_id: payload.project_id,
             task_id: payload.task_id,
             description: payload.description,
-            duration_seconds: payload.duration_seconds,
+            duration_minutes: payload.duration_minutes,
             entry_date: payload.entry_date,
             created_at: new Date().toISOString(),
         })

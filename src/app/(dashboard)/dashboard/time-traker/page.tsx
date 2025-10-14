@@ -38,7 +38,7 @@ export default function TimeTrackerPage() {
             try {
                 const activeProjects = await getProjects();
                 // Filtramos para mostrar solo proyectos activos o en pausa
-                const filtered = activeProjects.filter(p => p.status === 'in_progress' || p.status === 'on_hold' || p.status === 'pending');
+                const filtered = activeProjects.filter(p => p.status === 'in_progress' || p.status === 'in_pause' || p.status === 'pending');
                 setProjects(filtered);
             } catch {
                 setError('No se pudieron cargar los proyectos.');

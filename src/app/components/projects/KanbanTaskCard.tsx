@@ -25,11 +25,11 @@ const getStatusStyles = (status: TaskStatus) => {
 
 const getPriorityStyles = (priority: TaskPriority) => {
     switch (priority) {
-        case 'Baja':
+        case 'low':
             return 'bg-gray-200 text-gray-700';
-        case 'Media':
+        case 'medium':
             return 'bg-orange-200 text-orange-800';
-        case 'Alta':
+        case 'high':
             return 'bg-red-200 text-red-800';
         default:
             return 'bg-gray-200 text-gray-700';
@@ -90,6 +90,7 @@ export default function KanbanTaskCard({ task, onDragStart }: KanbanTaskCardProp
                     <span>{TASK_STATUS_MAP[task.status as TaskStatus]}</span>
                 </span>
             </div>
+
         </div>
     );
 }

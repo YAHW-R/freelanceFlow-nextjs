@@ -142,7 +142,7 @@ export default function TimeTrackerPage() {
                 </h1>
                 <Link
                     href="/dashboard/time-traker/manual"
-                    className="inline-flex items-center rounded-md border border-gray-300 bg-background-secondary px-4 py-2 text-sm font-medium text-foreground-primary shadow-sm transition-colors duration-200 hover:bg-gray-100"
+                    className="inline-flex items-center rounded-md border border-background-secondary bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:bg-primary-hover"
                 >
                     <PlusSquare size={18} className="mr-2" /> Registrar Horas Manualmente
                 </Link>

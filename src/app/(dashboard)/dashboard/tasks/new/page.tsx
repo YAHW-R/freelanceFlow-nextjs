@@ -24,7 +24,7 @@ export default function NewTaskPage() {
     const [description, setDescription] = useState<string>('');
     const [status, setStatus] = useState<TaskStatus>('pending'); // Estado inicial por defecto
     const [dueDate, setDueDate] = useState<string>(''); // Formato 'YYYY-MM-DD'
-    const [priority, setPriority] = useState<TaskPriority>('Media'); // Prioridad por defecto
+    const [priority, setPriority] = useState<TaskPriority>('medium'); // Prioridad por defecto
 
     useEffect(() => {
         async function fetchProjects() {
@@ -126,7 +126,7 @@ export default function NewTaskPage() {
                 {/* Selección de Proyecto (Opcional) */}
                 <div>
                     <label htmlFor="projectId" className="block text-sm font-medium text-foreground-secondary">
-                        Asignar a Proyecto (Opcional)
+                        Asignar a Proyecto
                     </label>
                     <select
                         id="projectId"
@@ -183,10 +183,8 @@ export default function NewTaskPage() {
                             onChange={(e) => setStatus(e.target.value as TaskStatus)}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 bg-background-secondary text-foreground-primary"
                         >
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="En Progreso">En Progreso</option>
-                            <option value="Bloqueada">Bloqueada</option>
-                            {/* 'Finalizada' no debería ser una opción al crear */}
+                            <option value="pending">Pendiente</option>
+                            <option value="in_progress">En Progreso</option>
                         </select>
                     </div>
 
@@ -202,9 +200,9 @@ export default function NewTaskPage() {
                             onChange={(e) => setPriority(e.target.value as TaskPriority)}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 bg-background-secondary text-foreground-primary"
                         >
-                            <option value="Alta">Alta</option>
-                            <option value="Media">Media</option>
-                            <option value="Baja">Baja</option>
+                            <option value="high">Alta</option>
+                            <option value="medium">Media</option>
+                            <option value="low">Baja</option>
                         </select>
                     </div>
                 </div>

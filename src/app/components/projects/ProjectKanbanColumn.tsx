@@ -18,7 +18,6 @@ const statusConfig = {
     in_progress: { title: 'En Progreso', color: 'bg-blue-500' },
     in_pause: { title: 'En Pausa', color: 'bg-orange-500' },
     completed: { title: 'Completado', color: 'bg-green-500' },
-    archived: { title: 'Archivado', color: 'bg-gray-500' },
 };
 
 export default function ProjectKanbanColumn({

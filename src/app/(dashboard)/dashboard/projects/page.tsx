@@ -211,7 +211,7 @@ export default function ProjectsPage() {
                     <ProjectKanbanColumn
                         key={status}
                         status={status}
-                        projects={projectsByStatus.get(status) || []}
+                        projects={projectsByStatus.get(status) ?? []}
                         clients={clients}
                         onProjectDragStart={handleDragStart}
                         onColumnDragOver={handleDragOver}

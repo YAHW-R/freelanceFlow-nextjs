@@ -26,6 +26,7 @@ export default function TasksPage() {
             setLoading(true);
             try {
                 const fetchedTasks = await getTasksForUser();
+                console.log(fetchedTasks)
                 setTasks(fetchedTasks);
             } catch (err: unknown) {
                 if (err instanceof Error) {
@@ -46,8 +47,8 @@ export default function TasksPage() {
     const projectsInTasks = useMemo(() => {
         const uniqueProjects = new Map<string, string>(); // Map<project_id, project_name>
         tasks.forEach(task => {
-            if (task.project_id && task.project_name) {
-                uniqueProjects.set(task.project_id, task.project_name);
+            if (task.project_id && task.projects?.name) {
+                uniqueProjects.set(task.project_id, task.projects.name);
             }
         });
         return Array.from(uniqueProjects.entries()).map(([id, name]) => ({ id, name }));
@@ -65,7 +66,7 @@ export default function TasksPage() {
                 task =>
                     task.title.toLowerCase().includes(lowercasedSearchTerm) ||
                     task.description?.toLowerCase().includes(lowercasedSearchTerm) ||
-                    task.project_name?.toLowerCase().includes(lowercasedSearchTerm)
+                    task.projects?.name?.toLowerCase().includes(lowercasedSearchTerm)
             );
         }
 
@@ -223,7 +224,7 @@ export default function TasksPage() {
                     <TaskKanbanColumn
                         key={status}
                         status={status}
-                        tasks={tasksByStatus.get(status) || []}
+                        tasks={tasksByStatus.get(status) ?? []}
                         onTaskDragStart={handleDragStart}
                         onColumnDragOver={handleDragOver}
                         onColumnDrop={handleDrop}

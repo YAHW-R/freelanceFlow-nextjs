@@ -1,9 +1,9 @@
 import { ProjectStatus, TaskStatus } from "./types"
 
 export const PROJECT_STATUS_MAP: Readonly<Record<ProjectStatus, string>> = {
+    in_pause: 'En pausa',
     pending: 'Pendiente',
     in_progress: 'En progreso',
-    in_pause: 'En pausa',
     completed: 'Completado',
 }
 

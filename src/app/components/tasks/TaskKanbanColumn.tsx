@@ -1,5 +1,3 @@
-// @/app/components/tasks/TaskKanbanColumn.tsx
-
 import { TaskWithProjectName, TaskStatus } from '@/lib/types';
 import TaskKanbanCard from './TaskKanbanCard';
 

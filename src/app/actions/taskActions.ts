@@ -2,16 +2,16 @@
 
 import { createClient } from "@/lib/supabase/server"
 
-import type { Task, TaskWithProjectName } from "@/lib/types"
+import type { Task, TaskStatus, TaskWithProjectName } from "@/lib/types"
 import { redirect } from "next/navigation"
 
 export async function getTasksUser() {
     const supabase = await createClient()
-    const user = supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
         throw new Error('User not authenticated')
     }
-    const userId = (await user).data.user?.id
+    const userId = user.id
     if (!userId) {
         throw new Error('User ID not found')
     }
@@ -35,7 +35,7 @@ export async function getTasksUser() {
 }
 
 
-export async function updateTaskStatus(taskId: string, newStatus: string) {
+export async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
     const supabase = await createClient()
     const { data, error } = await supabase
         .from('tasks')
@@ -55,11 +55,11 @@ export async function updateTaskStatus(taskId: string, newStatus: string) {
 
 export async function createTask(task: Omit<Task, 'id' | 'created_at' | 'user_id'>) {
     const supabase = await createClient()
-    const user = supabase.auth.getUser()
+    const user = await supabase.auth.getUser()
     if (!user) {
         redirect('/login')
     }
-    const userId = (await user).data.user?.id
+    const userId = (user).data.user?.id
     if (!userId) {
         throw new Error('User ID not found')
     }

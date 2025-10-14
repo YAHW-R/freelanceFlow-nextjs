@@ -60,7 +60,7 @@ export interface ClientOptions {
 }
 
 export type TaskStatus = 'pending' | 'in_progress' | 'completed';
-export type TaskPriority = 'Baja' | 'Media' | 'Alta';
+export type TaskPriority = 'low' | 'medium' | 'high';
 
 export interface Task {
     id: string;
@@ -76,7 +76,7 @@ export interface Task {
 }
 
 export interface TaskWithProjectName extends Task {
-    project_name?: string;
+    projects: { name: string }
 }
 
 

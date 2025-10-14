@@ -9,6 +9,8 @@ import TaskKanbanColumn from '@/app/components/tasks/TaskKanbanColumn';
 import { getTasksUser as getTasksForUser, updateTaskStatus } from '@/app/actions/taskActions'; // Importa tus Server Actions
 import { TaskWithProjectName, TaskStatus } from '@/lib/types'; // Asegúrate de que los tipos estén bien importados
 
+import { TASK_STATUS_ARRAY } from '@/lib/global';
+
 export default function TasksPage() {
     const [tasks, setTasks] = useState<TaskWithProjectName[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -19,15 +21,12 @@ export default function TasksPage() {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filterProject, setFilterProject] = useState<string | 'Todos'>('Todos'); // Para filtrar por proyecto
 
-    // Definir los estados del Kanban (columnas)
-    const KANBAN_STATUSES: TaskStatus[] = ['pending', 'in_progress', 'completed'];
-
     useEffect(() => {
         async function fetchTasks() {
             setLoading(true);
             try {
                 const fetchedTasks = await getTasksForUser();
-                setTasks(fetchedTasks || []); // Asegura que 'tasks' sea siempre un array
+                setTasks(fetchedTasks);
             } catch (err: unknown) {
                 if (err instanceof Error) {
                     console.error('Error al cargar tareas para Kanban:', err);
@@ -57,7 +56,7 @@ export default function TasksPage() {
 
     // Tareas filtradas para mostrar en las columnas
     const filteredTasks = useMemo(() => {
-        let currentTasks = [...tasks];
+        let currentTasks = tasks;
 
         // Filtrar por término de búsqueda
         if (searchTerm.trim()) {
@@ -82,14 +81,14 @@ export default function TasksPage() {
     // Agrupar tareas por estado para las columnas del Kanban
     const tasksByStatus = useMemo(() => {
         const grouped = new Map<TaskStatus, TaskWithProjectName[]>();
-        KANBAN_STATUSES.forEach(status => grouped.set(status, [])); // Inicializa todas las columnas
+        TASK_STATUS_ARRAY.forEach(status => grouped.set(status, [])); // Inicializa todas las columnas
 
         filteredTasks.forEach(task => {
             grouped.get(task.status as TaskStatus)?.push(task);
         });
 
         return grouped;
-    }, [filteredTasks, KANBAN_STATUSES]);
+    }, [filteredTasks]);
 
     // Manejadores para Drag & Drop
     const handleDragStart = (e: DragEvent, taskId: string) => {
@@ -149,7 +148,7 @@ export default function TasksPage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <p className="text-xl font-medium">Cargando tablero Kanban...</p>
+                    <p className="text-xl font-medium">Cargando tablero Kanban de tareas...</p>
                 </div>
             </div>
         );
@@ -220,7 +219,7 @@ export default function TasksPage() {
 
             {/* Contenedor de las Columnas Kanban */}
             <div className="flex-1 flex space-x-6 overflow-x-auto p-4 custom-scrollbar bg-background-secondary rounded-lg shadow-inner animate-fade-in-up animation-delay-200">
-                {KANBAN_STATUSES.map((status) => (
+                {TASK_STATUS_ARRAY.map((status) => (
                     <TaskKanbanColumn
                         key={status}
                         status={status}

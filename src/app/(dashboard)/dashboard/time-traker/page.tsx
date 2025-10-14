@@ -113,7 +113,7 @@ export default function TimeTrackerPage() {
             await createTimeEntry({
                 project_id: selectedProjectId,
                 task_id: selectedTaskId,
-                duration_seconds: time,
+                duration_minutes: time * 60,
                 description: description || undefined,
                 entry_date: new Date().toISOString(),
             });

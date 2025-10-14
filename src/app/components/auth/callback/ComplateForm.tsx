@@ -6,8 +6,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client'; // Cliente de componente
 import { Bot, User, Phone } from 'lucide-react';
-import { LuBot, LuUser, LuPhone } from 'react-icons/lu';
-
 interface CompleteProfileFormProps {
     userEmail: string; // Para mostrarlo o pre-llenarlo
 }

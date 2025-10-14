@@ -1,6 +1,6 @@
 // @/app/components/tasks/TaskKanbanCard.tsx
 
-import { TaskWithProjectName, TaskPriority } from '@/lib/types';
+import { TaskWithProjectName } from '@/lib/types';
 import { Calendar, Flag } from 'lucide-react';
 
 interface TaskKanbanCardProps {

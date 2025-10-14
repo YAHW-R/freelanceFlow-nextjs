@@ -10,8 +10,7 @@ import {
     Info,
     CheckCircle,
     PauseCircle,
-    Clock,
-    Archive
+    Clock
 } from 'lucide-react';
 
 // Importamos el Client Component para mostrar las tareas del proyecto

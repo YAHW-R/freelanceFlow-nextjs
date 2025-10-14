@@ -23,7 +23,7 @@ export default function EditProfilePage() {
     const [username, setUsername] = useState<string>('');
     const [fullName, setFullName] = useState<string>('');
     const [avatarUrl, setAvatarUrl] = useState<string>('');
-    const [skills, setSkills] = useState<string>('');
+    const [skills, setSkills] = useState<Array<string>>([]);
     const [bio, setBio] = useState<string>('');
 
     useEffect(() => {
@@ -37,7 +37,7 @@ export default function EditProfilePage() {
                     setUsername(userProfile.username || '');
                     setFullName(userProfile.full_name || '');
                     setAvatarUrl(userProfile.avatar_url || '');
-                    setSkills(userProfile.skills || '');
+                    setSkills(userProfile.skills || []);
                     setBio(userProfile.bio || '');
                 } else {
                     setError('No se pudo cargar tu perfil.');
@@ -85,7 +85,7 @@ export default function EditProfilePage() {
                 username: username.trim() === '' ? null : username.trim(),
                 full_name: fullName.trim() === '' ? null : fullName.trim(),
                 avatar_url: avatarUrl.trim() === '' ? null : avatarUrl.trim(),
-                skills: skills.trim() === '' ? null : skills.trim(),
+                skills: skills.length === 0 ? [] : skills,
                 bio: bio.trim() === '' ? null : bio.trim(),
             };
 
@@ -107,6 +107,11 @@ export default function EditProfilePage() {
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) setSelectedImage(e.target.files[0]);
     };
+
+    const handleSkillsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const skillsString = e.target.value
+        setSkills(skillsString.split(','))
+    }
 
     if (loading) {
         return (
@@ -199,8 +204,8 @@ export default function EditProfilePage() {
                         type="text"
                         id="skills"
                         name="skills"
-                        value={skills}
-                        onChange={(e) => setSkills(e.target.value)}
+                        value={skills.join(',')}
+                        onChange={handleSkillsChange}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2"
                         placeholder="Ej: JavaScript, React, Node.js, etc."
                     />

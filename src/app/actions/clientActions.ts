@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from "@/lib/supabase/server";
+import { Client } from "@/lib/types";
 
 export async function getClients() {
     const supabase = await createClient();
@@ -36,7 +37,7 @@ export async function getClientById(clientId: string) {
         console.error('Error fetching client by ID:', error);
         return null;
     }
-    return data;
+    return data as Client;
 }
 
 export async function createClientOfUser(clientData: { name: string; contact_person?: string; email?: string; phone?: string; notes?: string; }) {
@@ -46,5 +47,5 @@ export async function createClientOfUser(clientData: { name: string; contact_per
 
     const { data, error } = await supabase.from('clients').insert({ ...clientData, user_id: user.id }).select().single();
     if (error) throw new Error(error.message);
-    return data;
+    return data as Client;
 }

@@ -7,7 +7,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { Loader2, PlusCircle } from 'lucide-react'; // Iconos
 import { createProject } from '@/app/actions/projectsActions';
 import { getClients } from '@/app/actions/clientActions';
-import { ProjectStatus, ClientOptions, Project } from '@/lib/types';
+import { ProjectStatus, ClientOptions } from '@/lib/types';
 
 
 import Link from 'next/link';

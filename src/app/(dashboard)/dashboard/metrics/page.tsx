@@ -8,7 +8,7 @@ import { getProjects } from '@/app/actions/projectsActions';
 import { getClients } from '@/app/actions/clientActions';
 import { getTasksUser } from '@/app/actions/taskActions';
 import { getTimeEntries } from '@/app/actions/timeTrakerActions'; // Asumimos que esta acción existe
-import { Project, Client, Task, TimeEntries } from '@/lib/types';
+import { Project } from '@/lib/types';
 
 // Importa tus componentes de gráfico aquí (ej. de Recharts, Nivo, Chart.js)
 // import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';

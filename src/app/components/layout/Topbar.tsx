@@ -21,7 +21,7 @@ import { getTasksUser } from '@/app/actions/taskActions';
 import { getProjects } from '@/app/actions/projectsActions';
 import { getClients } from '@/app/actions/clientActions';
 
-import { Profile, TaskStatus, TaskWithProjectName, Project, Client } from '../../../lib/types';
+import { Profile, TaskWithProjectName, Project, Client } from '../../../lib/types';
 
 import Image from 'next/image';
 

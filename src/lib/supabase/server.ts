@@ -16,7 +16,7 @@ export async function createClient() {
                 set(name: string, value: string, options) {
                     try {
                         cookieStore.set({ name, value, ...options });
-                    } catch (error) {
+                    } catch {
                         // Se llama desde un Componente de Servidor, donde no se pueden setear cookies.
                         // Esto se puede ignorar si tienes el middleware refrescando la sesión.
                     }
@@ -24,7 +24,7 @@ export async function createClient() {
                 remove(name: string, options) {
                     try {
                         cookieStore.set({ name, value: '', ...options });
-                    } catch (error) {
+                    } catch {
                         // Se llama desde un Componente de Servidor, donde no se pueden setear cookies.
                     }
                 },

@@ -9,6 +9,7 @@ import { getProjects, updateProjectStatus } from '@/app/actions/projectsActions'
 import { getClients } from '@/app/actions/clientActions';
 import { Project, ClientOptions, ProjectStatus } from '@/lib/types';
 import ProjectKanbanColumn from '@/app/components/projects/ProjectKanbanColumn';
+import { PROJECT_STATUS_ARRAY } from '@/lib/global';
 
 export default function ProjectsPage() {
     const [projects, setProjects] = useState<Project[]>([]);
@@ -20,9 +21,6 @@ export default function ProjectsPage() {
     // Estados para filtros
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filterClient, setFilterClient] = useState<string | 'Todos'>('Todos');
-
-    // Definir los estados del Kanban (columnas)
-    const KANBAN_STATUSES: ProjectStatus[] = ['pending', 'in_progress', 'in_pause', 'completed'];
 
     useEffect(() => {
         async function fetchData() {
@@ -69,7 +67,7 @@ export default function ProjectsPage() {
     // Agrupar proyectos por estado para las columnas del Kanban
     const projectsByStatus = useMemo(() => {
         const grouped = new Map<ProjectStatus, Project[]>();
-        KANBAN_STATUSES.forEach(status => grouped.set(status, [])); // Inicializa todas las columnas
+        PROJECT_STATUS_ARRAY.forEach(status => grouped.set(status, [])); // Inicializa todas las columnas
 
         filteredProjects.forEach(project => {
             if (grouped.has(project.status)) {
@@ -78,7 +76,7 @@ export default function ProjectsPage() {
         });
 
         return grouped;
-    }, [filteredProjects, KANBAN_STATUSES]);
+    }, [filteredProjects]);
 
     // Manejadores para Drag & Drop
     const handleDragStart = (e: React.DragEvent, projectId: string) => {
@@ -209,7 +207,7 @@ export default function ProjectsPage() {
 
             {/* Contenedor de las Columnas Kanban */}
             <div className="flex-1 flex space-x-6 overflow-x-auto p-4 custom-scrollbar bg-background-secondary rounded-lg shadow-inner animate-fade-in-up animation-delay-200">
-                {KANBAN_STATUSES.map((status) => (
+                {PROJECT_STATUS_ARRAY.map((status) => (
                     <ProjectKanbanColumn
                         key={status}
                         status={status}

@@ -5,6 +5,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { ListTodo, Plus, CheckCircle, Circle, Loader2, Info, Edit, Trash2, Calendar } from 'lucide-react';
+
+import { updateTaskStatus, deleteTask } from '@/app/actions/taskActions';
+
 import { createClient } from '@/lib/supabase/client'; // Cliente de componente
 import type { Task, TaskStatus } from '@/lib/types'; // Asume que tienes un tipo Task
 
@@ -69,29 +72,36 @@ export default function TaskOverview({ projectId }: TaskOverviewProps) {
         return tasks.filter(task => task.status === filterStatus);
     }, [tasks, filterStatus]);
 
+    const handleDeleteTask = async (taskId: string) => {
+        try {
+            await deleteTask(taskId);
+        }
+        catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error('Error al eliminar la tarea:', error.message);
+                setError('No se pudo eliminar la tarea.');
+            }
+        }
+    }
+
+
     const handleToggleTaskStatus = async (taskId: string, currentStatus: TaskStatus) => {
 
 
         const newStatus: TaskStatus = currentStatus === 'completed' ? 'pending' : 'completed';
         setLoading(true); // O puedes manejar el loading individualmente por tarea
-        const { error: updateError } = await supabase
-            .from('tasks')
-            .update({ status: newStatus, updated_at: new Date().toISOString() })
-            .eq('id', taskId);
-
-        if (updateError) {
-            console.error('Error al actualizar estado de tarea:', updateError);
-            setError('Error al actualizar la tarea.');
-        } else {
-            // Optimizacion UI: Actualiza el estado local directamente sin refetch (más rápido)
-            setTasks(prevTasks =>
-                prevTasks.map(task =>
-                    task.id === taskId ? { ...task, status: newStatus } : task
-                )
-            );
-            // Si usas Realtime, el refetch ya lo hará, pero esto es más inmediato
+        try {
+            await updateTaskStatus(taskId, newStatus);
         }
-        setLoading(false);
+        catch (err: unknown) {
+            if (err instanceof Error) {
+                console.error('Error al actualizar el estado de la tarea:', err.message);
+                setError('No se pudo actualizar el estado de la tarea.');
+            }
+        }
+        finally {
+            setLoading(false);
+        }
     };
 
     const getTaskStatusDisplay = (status: TaskStatus) => {
@@ -161,7 +171,7 @@ export default function TaskOverview({ projectId }: TaskOverviewProps) {
                         const statusDisplay = getTaskStatusDisplay(task.status as TaskStatus);
                         const formattedDueDate = task.due_date ? new Date(task.due_date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : 'Sin fecha';
                         return (
-                            <li key={task.id} className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100 transition-shadow duration-200 hover:shadow-md animate-fade-in-left">
+                            <li key={task.id} className="flex items-center justify-between bg-background p-4 rounded-lg shadow-sm border border-background transition-shadow duration-200 hover:shadow-md animate-fade-in-left">
                                 <div className="flex-1 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
                                     <button
                                         onClick={() => handleToggleTaskStatus(task.id, task.status as TaskStatus)}
@@ -188,10 +198,10 @@ export default function TaskOverview({ projectId }: TaskOverviewProps) {
                                             <span>{formattedDueDate}</span>
                                         </span>
                                     )}
-                                    <Link href={`/dashboard/projects/${projectId}/tasks/${task.id}/edit`} className="text-secondary hover:text-primary-hover transition-colors duration-200" title="Editar Tarea">
+                                    {/* <Link href={`/dashboard/projects/${projectId}/tasks/${task.id}/edit`} className="text-secondary hover:text-primary-hover transition-colors duration-200" title="Editar Tarea">
                                         <Edit size={16} />
-                                    </Link>
-                                    <button className="text-red-500 hover:text-red-700 transition-colors duration-200" title="Eliminar Tarea">
+                                    </Link> */}
+                                    <button onClick={() => handleDeleteTask(task.id)} className="text-red-500 hover:text-red-700 transition-colors duration-200" title="Eliminar Tarea">
                                         <Trash2 size={16} />
                                     </button>
                                 </div>

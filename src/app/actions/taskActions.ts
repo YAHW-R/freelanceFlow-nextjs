@@ -52,7 +52,6 @@ export async function updateTaskStatus(taskId: string, newStatus: TaskStatus) {
     return data as Task
 }
 
-
 export async function createTask(task: Omit<Task, 'id' | 'created_at' | 'user_id'>) {
     const supabase = await createClient()
     const user = await supabase.auth.getUser()
@@ -94,4 +93,22 @@ export async function getTasksByProject(projectId: string): Promise<Task[]> {
         throw new Error("No se pudieron obtener las tareas del proyecto.");
     }
     return data || [];
+}
+
+
+export async function deleteTask(taskId: string) {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', taskId)
+        .select()
+        .single()
+
+    if (error) {
+        console.error('Error deleting task:', error)
+        throw error
+    }
+
+    return data as Task
 }

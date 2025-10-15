@@ -232,7 +232,7 @@ export default function Topbar() {
                                 )}
                             </ul>
                             <Link href="/dashboard/settings?tab=notifications" className="mt-3 block text-center text-sm text-primary hover:underline">
-                                Ver todas
+                                configurar
                             </Link>
                         </div>
                     )}

@@ -300,7 +300,7 @@ export default function MetricsPage() {
             </div>
 
             {/* Otras métricas o tablas (ej. proyectos más rentables) */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in-up animation-delay-300">
+            <div className="grid grid-cols-1 lg:grid-cols-1 gap-6 animate-fade-in-up animation-delay-300">
                 <div className="bg-background-secondary rounded-lg shadow-md p-6">
                     <h2 className="text-xl font-bold text-foreground-primary mb-4 flex items-center space-x-2">
                         <BarChart2 size={20} className="text-primary" />

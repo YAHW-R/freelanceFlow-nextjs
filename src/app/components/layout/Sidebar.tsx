@@ -28,7 +28,7 @@ const navItems = [
     { href: '/dashboard/clients', label: 'Clientes', icon: Users },
     { href: '/dashboard/time-traker', label: 'Time Tracker', icon: Clock },
     { href: '/dashboard/metrics', label: 'Métricas', icon: AreaChart },
-    { href: '/dashboard/invoices', label: 'Facturas', icon: FileText },
+    //{ href: '/dashboard/invoices', label: 'Facturas', icon: FileText },
 ];
 
 const secondaryNavItems = [

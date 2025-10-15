@@ -8,7 +8,6 @@ import {
     FolderKanban,
     ListTodo,
     Users,
-    FileText,
     AreaChart,
     Bot,
     Settings,

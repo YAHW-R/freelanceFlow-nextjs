@@ -9,8 +9,6 @@ const publicPaths = [
     '/auth/callback',
     '/forgot-password',
     '/reset-password',
-    '/terms',
-    '/privacy',
     '/',
     '/about',
     '/functions',

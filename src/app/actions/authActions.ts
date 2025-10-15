@@ -55,7 +55,7 @@ export async function signInWithGoogle() {
 export async function singInWithEmailLink({ email }: { email: string }) {
     const supabase = await createClient()
     const headersList = await headers()
-    const referer = headersList.get('referer') || `${process.env.NEXT_PUBLIC_BASE_URL}/login`
+    const referer = headersList.get('referer') || `/login`
 
     const { error } = await supabase.auth.signInWithOtp({
         email: email,
@@ -114,7 +114,7 @@ export async function signOut() {
 export async function registerWithEmail({ email, password }: { email: string, password: string }) {
     const supabase = await createClient()
     const headersList = await headers()
-    const referer = headersList.get('redirecteFrom') || `${process.env.NEXT_PUBLIC_APP_URL}/register/check-email`
+    const referer = headersList.get('redirecteFrom') || `/register/check-email`
 
     const { error } = await supabase.auth.signUp({
         email,

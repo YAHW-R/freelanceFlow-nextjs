@@ -2,21 +2,6 @@ import { NextResponse, NextRequest } from 'next/server'
 import { createClient } from './lib/supabase/server'
 
 
-const publicPaths = [
-    '/register/check-email',
-    '/login',
-    '/register',
-    '/auth/callback',
-    '/forgot-password',
-    '/reset-password',
-    '/',
-    '/about',
-    '/functions',
-    '/prices',
-    '/docs',
-]
-
-
 
 export const middleware = async (request: NextRequest) => {
     const url = request.nextUrl
@@ -26,7 +11,7 @@ export const middleware = async (request: NextRequest) => {
 
     const { data: { user } } = await supabase.auth.getUser()
 
-    if (!publicPaths.includes(pathname) && !user) {
+    if (!user && pathname.startsWith('/dashboard')) {
         const cloneUrl = url.clone()
         cloneUrl.pathname = '/login'
         cloneUrl.searchParams.set('redirectedFrom', pathname)

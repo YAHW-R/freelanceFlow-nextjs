@@ -3,15 +3,15 @@
 'use client'; // Client Component para gráficos interactivos
 
 import { useState, useEffect } from 'react';
-import { BarChart2, PieChart, TrendingUp, Clock, Target, AlertCircle } from 'lucide-react';
+import { BarChart2, TrendingUp, Clock, Target, AlertCircle } from 'lucide-react';
 import { getProjects } from '@/app/actions/projectsActions';
-import { getClients } from '@/app/actions/clientActions';
+import { getClients } from '@/app/actions/clientActions'; // Asegúrate de que esta acción exista
 import { getTasksUser } from '@/app/actions/taskActions';
 import { getTimeEntries } from '@/app/actions/timeTrakerActions'; // Asumimos que esta acción existe
-import { Project } from '@/lib/types';
-
-// Importa tus componentes de gráfico aquí (ej. de Recharts, Nivo, Chart.js)
-// import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Project, Task, TimeEntries } from '@/lib/types';
+import { PROJECT_STATUS_MAP } from '@/lib/global';
+import ProductivityChart from '@/app/components/metrics/ProductivityChart';
+import ProjectCharts from '@/app/components/metrics/ProjectCharts';
 
 type Timeframe = '7d' | '30d' | '90d' | 'ytd';
 
@@ -21,6 +21,24 @@ interface Metrics {
     completedTasks: number;
     loggedHours: number;
     topProjects: (Project & { clientName?: string })[];
+}
+
+interface ProductivityData {
+    date: string;
+    hours: number;
+    tasksCompleted: number;
+}
+
+interface ProjectProgressData {
+    date: string;
+    started: number;
+    completed: number;
+}
+
+interface ProjectStatusData {
+    name: string;
+    value: number;
+    color: string;
 }
 
 // Helper para obtener el rango de fechas
@@ -58,6 +76,9 @@ export default function MetricsPage() {
         loggedHours: 0,
         topProjects: [],
     });
+    const [productivityData, setProductivityData] = useState<ProductivityData[]>([]);
+    const [projectProgressData, setProjectProgressData] = useState<ProjectProgressData[]>([]);
+    const [projectStatusData, setProjectStatusData] = useState<ProjectStatusData[]>([]);
 
     useEffect(() => {
         async function fetchMetrics() {
@@ -67,7 +88,7 @@ export default function MetricsPage() {
                 const { from, to } = getDateRange(timeframe);
 
                 // Fetch all data in parallel
-                const [projects, clients, tasks, timeEntries] = await Promise.all([
+                const [projects, clients, tasks, timeEntries]: [Project[], { id: string, name: string }[], Task[], TimeEntries[]] = await Promise.all([
                     getProjects(),
                     getClients(),
                     getTasksUser(),
@@ -86,11 +107,11 @@ export default function MetricsPage() {
                 const activeProjects = projects.filter(p => p.status === 'in_progress').length;
 
                 // 3. Completed Tasks: Count of tasks completed within the timeframe
-                // Asumimos que la fecha de completado es la de la entrada de tiempo si no hay otro campo
-                const completedTasks = tasks.filter(t => t.status === 'completed' && t.updated_at && new Date(t.updated_at) >= from && new Date(t.updated_at) <= to).length;
+                const tasksCompletedInFrame = tasks.filter(t => t.status === 'completed' && t.updated_at && new Date(t.updated_at) >= from && new Date(t.updated_at) <= to);
+                const completedTasks = tasksCompletedInFrame.length;
 
                 // 4. Logged Hours: Sum of all time entries in the period
-                const totalSeconds = timeEntries.reduce((acc, entry) => acc + entry.duration_minutes * 60, 0);
+                const totalSeconds = timeEntries.reduce((acc, entry) => acc + (entry.duration_minutes || 0) * 60, 0);
                 const loggedHours = totalSeconds / 3600;
 
                 // 5. Top Projects by Budget
@@ -109,6 +130,78 @@ export default function MetricsPage() {
                     loggedHours: parseFloat(loggedHours.toFixed(2)),
                     topProjects,
                 });
+
+                // --- Process data for Productivity Chart ---
+                const productivityByDay: { [key: string]: { hours: number; tasksCompleted: number } } = {};
+                const projectProgressByDay: { [key: string]: { started: number; completed: number } } = {};
+
+                // Initialize days in the range
+                for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+                    const dateString = d.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
+                    productivityByDay[dateString] = { hours: 0, tasksCompleted: 0 };
+                    projectProgressByDay[dateString] = { started: 0, completed: 0 };
+                }
+
+                // Aggregate time entries
+                timeEntries.forEach(entry => {
+                    const entryDate = new Date(entry.entry_date);
+                    if (entryDate >= from && entryDate <= to) {
+                        const dateString = entryDate.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
+                        if (productivityByDay[dateString]) {
+                            productivityByDay[dateString].hours += (entry.duration_minutes || 0) / 60;
+                        }
+                    }
+                });
+
+                // Aggregate completed tasks
+                tasksCompletedInFrame.forEach(task => {
+                    if (task.updated_at) {
+                        const completedDate = new Date(task.updated_at);
+                        const dateString = completedDate.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
+                        if (productivityByDay[dateString]) {
+                            productivityByDay[dateString].tasksCompleted += 1;
+                        }
+                    }
+                });
+
+                setProductivityData(Object.entries(productivityByDay).map(([date, values]) => ({ date, hours: parseFloat(values.hours.toFixed(2)), tasksCompleted: values.tasksCompleted })));
+
+                // --- Process data for Project Progress Chart ---
+                projects.forEach(project => {
+                    // Projects started in the period
+                    const startDate = new Date(project.created_at);
+                    if (startDate >= from && startDate <= to) {
+                        const dateString = startDate.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
+                        if (projectProgressByDay[dateString]) {
+                            projectProgressByDay[dateString].started += 1;
+                        }
+                    }
+                    // Projects completed in the period
+                    if (project.status === 'completed' && project.due_date) {
+                        const endDate = new Date(project.due_date);
+                        if (endDate >= from && endDate <= to) {
+                            const dateString = endDate.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
+                            if (projectProgressByDay[dateString]) {
+                                projectProgressByDay[dateString].completed += 1;
+                            }
+                        }
+                    }
+                });
+
+                setProjectProgressData(Object.entries(projectProgressByDay).map(([date, values]) => ({ date, ...values })));
+
+                // --- Process data for Project Status Pie Chart ---
+                const statusCounts = projects.reduce((acc, project) => {
+                    acc[project.status] = (acc[project.status] || 0) + 1;
+                    return acc;
+                }, {} as Record<string, number>);
+
+                const statusColors: Record<string, string> = { 'pending': '#f59e0b', 'in_progress': '#3b82f6', 'completed': '#10b981', 'in_pause': '#6b7280', 'cancelled': '#ef4444' };
+                setProjectStatusData(Object.entries(statusCounts).map(([status, count]) => ({
+                    name: PROJECT_STATUS_MAP[status as keyof typeof PROJECT_STATUS_MAP] || status,
+                    value: count,
+                    color: statusColors[status] || '#8884d8'
+                })));
 
             } catch (err) {
                 console.error("Error fetching metrics:", err);
@@ -202,82 +295,51 @@ export default function MetricsPage() {
 
             {/* Secciones de Gráficos */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in-up animation-delay-200">
-                <div className="bg-background-secondary rounded-lg shadow-md p-6">
-                    <h2 className="text-xl font-bold text-foreground-primary mb-4 flex items-center space-x-2">
-                        <BarChart2 size={20} className="text-primary" />
-                        <span>Productividad (Horas/Día)</span>
-                    </h2>
-                    <div className="h-64 flex items-center justify-center text-foreground-secondary">
-                        {/* Aquí iría tu componente de gráfico de líneas/barras, ej: */}
-                        {/* <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={incomeData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="income" stroke="#06B6D4" activeDot={{ r: 8 }} />
-              </LineChart>
-            </ResponsiveContainer> */}
-                        <p>Gráfico de Productividad (Placeholder)</p>
-                    </div>
-                </div>
-
-                <div className="bg-background-secondary rounded-lg shadow-md p-6">
-                    <h2 className="text-xl font-bold text-foreground-primary mb-4 flex items-center space-x-2">
-                        <PieChart size={20} className="text-primary" />
-                        <span>Estado de Proyectos (Total)</span>
-                    </h2>
-                    <div className="h-64 flex items-center justify-center text-foreground-secondary">
-                        {/* Aquí iría tu componente de gráfico de pastel/dona, ej: */}
-                        {/* <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={projectStatusData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} fill="#8884d8" label />
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer> */}
-                        <p>Gráfico de Estado de Proyectos (Placeholder)</p>
-                    </div>
-                </div>
+                <ProductivityChart data={productivityData} />
+                <ProjectCharts progressData={projectProgressData} statusData={projectStatusData} />
             </div>
 
             {/* Otras métricas o tablas (ej. proyectos más rentables) */}
-            <div className="bg-background-secondary rounded-lg shadow-md p-6 animate-fade-in-up animation-delay-300">
-                <h2 className="text-xl font-bold text-foreground-primary mb-4 flex items-center space-x-2">
-                    <BarChart2 size={20} className="text-primary" />
-                    <span>Top 5 Proyectos por Presupuesto</span>
-                </h2>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-background-secondary">
-                            <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider">Proyecto</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider">Cliente</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider">Presupuesto</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-background-secondary divide-y divide-gray-200">
-                            {metrics.topProjects.length > 0 ? metrics.topProjects.map(project => (
-                                <tr key={project.id}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground-primary">{project.name}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground-secondary">{project.clientName}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground-secondary">€{(project.budget || 0).toLocaleString('es-ES')}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${project.status === 'in_progress' ? 'bg-blue-100 text-blue-800' : project.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                                            {project.status.replace('_', ' ')}
-                                        </span>
-                                    </td>
-                                </tr>
-                            )) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in-up animation-delay-300">
+                <div className="bg-background-secondary rounded-lg shadow-md p-6">
+                    <h2 className="text-xl font-bold text-foreground-primary mb-4 flex items-center space-x-2">
+                        <BarChart2 size={20} className="text-primary" />
+                        <span>Top 5 Proyectos por Presupuesto</span>
+                    </h2>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-background-secondary">
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-4 text-center text-sm text-foreground-secondary">No hay proyectos para mostrar.</td>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider">Proyecto</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider">Cliente</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider">Presupuesto</th>
+                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-foreground uppercase tracking-wider">Estado</th>
                                 </tr>
-                            )}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="bg-background-secondary divide-y divide-gray-200">
+                                {metrics.topProjects.length > 0 ? metrics.topProjects.map(project => (
+                                    <tr key={project.id}>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground-primary">{project.name}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground-secondary">{project.clientName}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground-secondary">€{(project.budget || 0).toLocaleString('es-ES')}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${project.status === 'in_progress' ? 'bg-blue-100 text-blue-800' : project.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                                {PROJECT_STATUS_MAP[project.status]}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                )) : (
+                                    <tr>
+                                        <td colSpan={4} className="px-6 py-4 text-center text-sm text-foreground-secondary">No hay proyectos para mostrar.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
+                {/* El gráfico de distribución de proyectos se podría mover a ProjectCharts.tsx si se desea */}
+                {/* Por ahora lo dejamos aquí para mantener la estructura de la cuadrícula */}
             </div>
         </div>
     );

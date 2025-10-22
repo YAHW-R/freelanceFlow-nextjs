@@ -1,7 +1,6 @@
 import {
     LuFolder,
     LuClock,
-    LuDollarSign,
     LuUsers,
     LuChartColumn,
     LuBrainCircuit,
@@ -28,15 +27,6 @@ export default function Funcionalidades() {
                 "Timer integrado para registrar horas trabajadas",
                 "Reportes automáticos de productividad",
                 "Seguimiento de tiempo por proyecto y cliente",
-            ],
-        },
-        {
-            icon: LuDollarSign,
-            title: "Facturación Profesional",
-            items: [
-                "Generador de facturas personalizables",
-                "Recordatorios automáticos de pagos pendientes",
-                "Integración con Stripe y PayPal",
             ],
         },
         {

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, FormEvent } from 'react';
 import { Bot, User2, Send, Wand2, Loader2, MessageSquareText } from 'lucide-react';
 import { makeRequest } from '@/app/actions/AiActions';
+import MarkdownRenderer from '@/app/components/ai-assist/MarkdownRender';
 
 interface Message {
     id: string;
@@ -112,7 +113,11 @@ export default function AIChatPage() {
                                     {message.timestamp.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </div>
-                            <p className="text-sm">{message.content}</p>
+                            {message.sender === 'user' ? (
+                                <p className="text-sm">{message.content}</p> // Los mensajes del usuario no suelen ser Markdown
+                            ) : (
+                                <MarkdownRenderer content={message.content} className="text-sm" /> // Mensajes de la IA sí son Markdown
+                            )}
                         </div>
                     </div>
                 ))}

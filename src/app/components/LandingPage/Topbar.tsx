@@ -58,7 +58,7 @@ export default function TopBar() {
                     </div>
 
                     {isAuthenticated ? (
-                        <Link href="/dashboard" className="h-fit my-auto px-4 py-2 rounded-md shadow-sm text-background bg-primary hover:bg-primary-hover transition">
+                        <Link href="/dashboard" className="h-fit my-auto px-4 py-2 rounded-md shadow-sm text-fore` bg-primary hover:bg-primary-hover transition">
                             Dashboard
                         </Link>
                     ) : (

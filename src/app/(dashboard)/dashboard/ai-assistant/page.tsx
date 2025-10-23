@@ -1,9 +1,8 @@
-// app/(dashboard)/ai-chat/page.tsx
-
 'use client'; // Client Component para la interactividad del chat
 
 import { useState, useRef, useEffect, FormEvent } from 'react';
 import { Bot, User2, Send, Wand2, Loader2, MessageSquareText } from 'lucide-react';
+import { makeRequest } from '@/app/actions/AiActions';
 
 interface Message {
     id: string;
@@ -39,17 +38,7 @@ export default function AIChatPage() {
         setIsSending(true);
 
         try {
-            // Aquí harías la llamada a tu API de IA (Server Action, API Route, etc.)
-            // Por ejemplo: const response = await fetch('/api/ai-chat', { method: 'POST', body: JSON.stringify({ message: userMessage.content }) });
-            // const data = await response.json();
-            // const aiResponseContent = data.response;
-
-            // Simulación de respuesta de IA
-            const aiResponseContent = await new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve(`Hola, soy tu asistente IA. Has preguntado: "${userMessage.content}". Actualmente, puedo ayudarte con... (¡En el futuro, aquí irá la integración real con un modelo de IA!)`);
-                }, 1500); // Simula el tiempo de procesamiento de la IA
-            });
+            const aiResponseContent = await makeRequest(userMessage.content);
 
             const aiMessage: Message = {
                 id: Date.now().toString() + '-ai',
@@ -103,8 +92,8 @@ export default function AIChatPage() {
                     >
                         <div
                             className={`max-w-[70%] rounded-lg p-3 ${message.sender === 'user'
-                                ? 'bg-primary text-white'
-                                : 'bg-gray-100 text-foreground-primary'
+                                ? 'bg-primary text-foreground'
+                                : 'bg-background text-foreground'
                                 } shadow-sm`}
                         >
                             <div className="flex items-center space-x-2 text-xs mb-1">
@@ -119,7 +108,7 @@ export default function AIChatPage() {
                                         <span className="font-semibold text-primary">Asistente</span>
                                     </>
                                 )}
-                                <span className={`text-opacity-80 ${message.sender === 'user' ? 'text-white' : 'text-gray-600'}`}>
+                                <span className={`text-opacity-80 ${message.sender === 'user' ? 'text-foreground' : 'text-foreground-secondary'}`}>
                                     {message.timestamp.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </div>

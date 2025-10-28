@@ -90,3 +90,5 @@ export interface TimeEntries {
     entry_date: string;
     created_at: string;
 }
+
+export type createAiType = 'task' | 'project' | 'client'

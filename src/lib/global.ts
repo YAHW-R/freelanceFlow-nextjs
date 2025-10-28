@@ -1,4 +1,4 @@
-import { ProjectStatus, TaskStatus } from "./types"
+import { ProjectStatus, TaskStatus, createAiType } from "./types"
 
 export const PROJECT_STATUS_MAP: Readonly<Record<ProjectStatus, string>> = {
     in_pause: 'En pausa',
@@ -17,3 +17,7 @@ export const TASK_STATUS_MAP: Readonly<Record<TaskStatus, string>> = {
 }
 
 export const TASK_STATUS_ARRAY: TaskStatus[] = Object.keys(TASK_STATUS_MAP) as TaskStatus[]
+
+//Ai
+
+export const CREATE_TYPE_ARRAY: createAiType[] = ['task', 'project', 'client']

@@ -44,3 +44,7 @@ export const makeRequest = async (prompt: string) => {
     return response.text
 
 }
+
+export const createTaskWithAi = async () => {
+
+}

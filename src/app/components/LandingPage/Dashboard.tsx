@@ -50,13 +50,12 @@ export default function Dashboard() {
                     </ul>
                 </ScrollAnimation>
                 <ScrollAnimation animation="animate-fade-in-right" className="mt-12 lg:mt-0 lg:col-span-6">
-                    <div className="bg-background-secondary rounded-lg shadow-xl overflow-hidden aspect-[3/2] relative h-0" style={{ paddingBottom: '75%' }}>
+                    <div className="bg-background-secondary w-full lg:w-auto rounded-lg shadow-xl overflow-hidden aspect-[3/2] relative h-0" style={{ paddingBottom: '75%' }}>
                         <Image
                             src={imageDashboard}
                             alt="Dashboard preview"
                             fill
                             className="object-cover"
-                            sizes="(max-width: 1024px) 100vw, 50vw"
                         />
                     </div>
                 </ScrollAnimation>

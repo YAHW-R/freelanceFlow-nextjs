@@ -1,5 +1,5 @@
 import ScrollAnimation from "../ScrollAnimation"
-import { LuFolder, LuClock, LuDollarSign, LuUser, LuBrain } from "react-icons/lu"
+import { LuFolder, LuClock, LuUser, LuBrain } from "react-icons/lu"
 
 export default function Feutures() {
     return (

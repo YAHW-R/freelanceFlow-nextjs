@@ -52,54 +52,54 @@ export default function DashboardPage() {
     return (
         <div className="space-y-8 animate-fade-in">
             {/* Saludo y Título Principal */}
-            <h1 className="text-4xl font-extrabold text-foreground animate-fade-in-down">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-foreground animate-fade-in-down">
                 👋 Hola, {profile.username ?? profile.email ?? "Freelance"}!
             </h1>
 
             {/* Tarjetas de Resumen (Overview Cards) */}
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-down">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-4 md:gap-6">
+                <div className="rounded-lg bg-background-secondary p-4 md:p-6 shadow-md animate-fade-in-down">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold bg-background-secondary">Ingresos del Mes</h3>
+                        <h3 className="text-base md:text-lg font-semibold bg-background-secondary">Ingresos del Mes</h3>
                         <DollarSign size={24} className="text-green-acent" />
                     </div>
-                    <p className="mt-4 text-3xl font-bold text-foreground">$0</p>
+                    <p className="mt-4 text-2xl md:text-3xl font-bold text-foreground">$0</p>
                     {/*<p className="mt-1 text-sm text-foreground-secondary">+15% respecto al mes anterior</p>*/}
                 </div>
 
-                <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-down delay-100">
+                <div className="rounded-lg bg-background-secondary p-4 md:p-6 shadow-md animate-fade-in-down delay-100">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-foreground">{projects.length === 1 ? "Proyecto Activo" : "Proyectos Activos"}</h3>
+                        <h3 className="text-base md:text-lg font-semibold text-foreground">{projects.length === 1 ? "Proyecto Activo" : "Proyectos Activos"}</h3>
                         <TrendingUp size={24} className="text-blue-500" />
                     </div>
-                    <p className="mt-4 text-3xl font-bold text-foreground">{projects.length}</p>
-                    <p className="mt-1 text-sm text-foreground-secondary">{projectsInProgress !== 1 ? projectsInProgress + " proyectos en progreso" : "1 proyecto en progreso"}</p>
+                    <p className="mt-4 text-2xl md:text-3xl font-bold text-foreground">{projects.length}</p>
+                    <p className="mt-1 text-xs md:text-sm text-foreground-secondary">{projectsInProgress !== 1 ? projectsInProgress + " proyectos en progreso" : "1 proyecto en progreso"}</p>
                 </div>
 
-                <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-down delay-200">
+                <div className="rounded-lg bg-background-secondary p-4 md:p-6 shadow-md animate-fade-in-down delay-200">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-foreground">Tareas Pendientes</h3>
+                        <h3 className="text-base md:text-lg font-semibold text-foreground">Tareas Pendientes</h3>
                         <CalendarCheck size={24} className="text-orange-500" />
                     </div>
-                    <p className="mt-4 text-3xl font-bold text-foreground">{tasks.filter(task => task.status === "pending").length}</p>
-                    <p className="mt-1 text-sm text-foreground-secondary">{tasksDueToday >= 1 ? tasksDueToday + " vencen hoy" : ""}</p>
+                    <p className="mt-4 text-2xl md:text-3xl font-bold text-foreground">{tasks.filter(task => task.status === "pending").length}</p>
+                    <p className="mt-1 text-xs md:text-sm text-foreground-secondary">{tasksDueToday >= 1 ? tasksDueToday + " vencen hoy" : ""}</p>
                 </div>
 
-                <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-down delay-300">
+                <div className="rounded-lg bg-background-secondary p-4 md:p-6 shadow-md animate-fade-in-down delay-300">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-foreground">Asistente IA</h3>
+                        <h3 className="text-base md:text-lg font-semibold text-foreground">Asistente IA</h3>
                         <Sparkles size={24} className="text-purple-500" />
                     </div>
-                    <p className="mt-4 text-3xl font-bold text-foreground">¡Activo!</p>
-                    <p className="mt-1 text-sm text-foreground-secondary">Pregúntale cualquier cosa</p>
+                    <p className="mt-4 text-2xl md:text-3xl font-bold text-foreground">¡Activo!</p>
+                    <p className="mt-1 text-xs md:text-sm text-foreground-secondary">Pregúntale cualquier cosa</p>
                 </div>
             </div>
 
             {/* Proyectos en Progreso */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-left">
+                <div className="rounded-lg bg-background-secondary p-4 md:p-6 shadow-md animate-fade-in-left">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-foreground">Proyectos en Progreso</h2>
+                        <h2 className="text-base md:text-xl font-semibold text-foreground">Proyectos en Progreso</h2>
                         <Link href="/dashboard/projects" className="text-sm font-medium text-primary hover:underline">
                             Ver Todos
                         </Link>
@@ -108,7 +108,7 @@ export default function DashboardPage() {
                         {projects.filter(p => p.status === 'in_progress' || p.status === 'pending').map(project => (
                             <li key={project.id} className="border-b border-foreground-secondary pb-4 last:border-b-0 last:pb-0">
                                 <Link href={`/dashboard/projects/${project.id}`} className="block hover:text-primary-hover transition-colors duration-200">
-                                    <h3 className="text-lg font-medium text-foreground">{project.name}</h3>
+                                    <h3 className="text-base md:text-lg font-medium text-foreground">{project.name}</h3>
                                 </Link>
                                 <p className="text-sm text-foreground-secondary">Cliente: {clients.find(client => client.id === project.client_id)?.name}</p>
                                 <div className="mt-2 flex items-center justify-between text-sm">
@@ -127,9 +127,9 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Tareas Urgentes / Próximas */}
-                <div className="rounded-lg bg-background-secondary p-6 shadow-md animate-fade-in-left delay-100">
+                <div className="rounded-lg bg-background-secondary p-4 md:p-6 shadow-md animate-fade-in-left delay-100">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold text-foreground">Mis Tareas</h2>
+                        <h2 className="text-base md:text-xl font-semibold text-foreground">Mis Tareas</h2>
                         <Link href="/dashboard/tasks" className="text-sm font-medium text-primary hover:underline">
                             Ver Todas
                         </Link>
@@ -144,7 +144,7 @@ export default function DashboardPage() {
                                 // checked={task.status === 'Completado'} // Aquí integrarías la lógica de estado
                                 // onChange={() => toggleTaskStatus(task.id)}
                                 />
-                                <label htmlFor={`task-${task.id}`} className="ml-3 text-sm font-medium text-foreground">
+                                <label htmlFor={`task-${task.id}`} className="ml-3 text-xs md:text-sm font-medium text-foreground">
                                     {task.title} <span className="text-foreground-secondary">({projects.find(project => project.id === task.project_id)?.name})</span>
                                 </label>
                                 <span className={`ml-auto text-xs font-semibold ${task.due_date === 'Hoy' ? 'text-secondary' : 'text-foreground-secondary'}`}>

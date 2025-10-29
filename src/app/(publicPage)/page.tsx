@@ -7,12 +7,12 @@ import Footer from "../components/LandingPage/Footer"
 
 export default function DashboardPage() {
     return (
-        <div>
+        <section>
             <Hero />
             <Feutures />
             <Dashboard />
             <CTA />
             <Footer />
-        </div>
+        </section>
     )
 }

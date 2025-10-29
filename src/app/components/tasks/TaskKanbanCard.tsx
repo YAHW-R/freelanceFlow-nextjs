@@ -1,5 +1,25 @@
 import { TaskWithProjectName } from '@/lib/types';
 import { Calendar, Flag } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+// Simple hook to check for screen size
+const useMediaQuery = (query: string) => {
+    const [matches, setMatches] = useState(false);
+
+    useEffect(() => {
+        const media = window.matchMedia(query);
+        if (media.matches !== matches) {
+            setMatches(media.matches);
+        }
+        const listener = () => {
+            setMatches(media.matches);
+        };
+        window.addEventListener('resize', listener);
+        return () => window.removeEventListener('resize', listener);
+    }, [matches, query]);
+
+    return matches;
+};
 
 interface TaskKanbanCardProps {
     task: TaskWithProjectName;
@@ -13,11 +33,12 @@ const priorityConfig: Record<string, { color: string; text: string }> = {
 };
 
 export default function TaskKanbanCard({ task, onDragStart }: TaskKanbanCardProps) {
+    const isDesktop = useMediaQuery('(min-width: 768px)');
+
     let formattedDueDate = 'N/A';
     if (task.due_date) {
         try {
             const date = new Date(task.due_date);
-            // Comprueba si la fecha es válida antes de formatearla
             if (!isNaN(date.getTime())) {
                 formattedDueDate = date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
             } else {
@@ -34,11 +55,13 @@ export default function TaskKanbanCard({ task, onDragStart }: TaskKanbanCardProp
 
     return (
         <div
-            draggable
-            onDragStart={(e) => onDragStart(e, task.id)}
-            className="bg-background-secondary/100 p-4 rounded-lg shadow-sm border border-background-secondary cursor-grab active:cursor-grabbing transition-shadow duration-200 hover:shadow-md"
+            draggable={isDesktop} // Only allow dragging on desktop
+            onDragStart={(e) => isDesktop && onDragStart(e, task.id)}
+            className={`bg-background-secondary p-4 rounded-lg shadow-sm border border-transparent w-64 md:w-full flex-shrink-0 md:flex-shrink-1 transition-shadow duration-200 hover:shadow-md ${
+                isDesktop ? 'cursor-grab active:cursor-grabbing' : ''
+            }`}
         >
-            <h3 className="font-semibold text-foreground-primary mb-2">{task.title}</h3>
+            <h3 className="font-semibold text-foreground-primary mb-2 truncate">{task.title}</h3>
             {task.projects?.name && (
                 <p className="text-xs text-primary bg-primary/10 px-2 py-1 rounded-full inline-block mb-3">{task.projects?.name}</p>
             )}

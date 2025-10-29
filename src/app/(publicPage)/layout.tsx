@@ -6,7 +6,7 @@ export default function PublicLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div>
+        <div className="w-full">
             <TopBar />
             {/* Aquí podrías poner un logo grande, un footer simple, etc. */}
             {children}

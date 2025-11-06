@@ -81,6 +81,7 @@ export default function NewProjectPage() {
                 billing_type: billingType,
                 due_date: dueDate ? new Date(dueDate).toISOString() : undefined,
                 budget: budget === '' ? undefined : budget,
+                goals: [], // Inicialmente vacío
                 created_at: new Date().toISOString() // Set current timestamp
             };
 

@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: oklab(92.758% -0.00055 -0.00589);
-  --background-secondary: #FFFFFF;
-  --foreground: #111827;
-  --foreground-secondary: #374151;
-  --primary: #312E81;
-  --primary-hover: #4338CA;
-  --primary-active: #1E1B4B;
-  --secondary: #EC4899;
-  --secundary-hover: #F472B6;
-  --secundary-active: #DB2777;
+  --background: #1F2937;
+  --background-secondary: #111827;
+  --foreground: #F3F4F6;
+  --foreground-secondary: #D1D5DB;
+  --primary: #4338CA;
+  --primary-hover: #4F46E5;
+  --primary-active: #3730A3;
+  --secondary: #BE185D;
+  --secundary-hover: #EC4899;
+  --secundary-active: #9D174D;
 }
 
 @theme inline {

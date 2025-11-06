@@ -55,10 +55,14 @@ export default function TaskKanbanCard({ task, onDragStart }: TaskKanbanCardProp
 
     return (
         <div
-            draggable={isDesktop} // Only allow dragging on desktop
-            onDragStart={(e) => isDesktop && onDragStart(e, task.id)}
-            className={`bg-background-secondary p-4 rounded-lg shadow-sm border border-transparent w-64 md:w-full flex-shrink-0 md:flex-shrink-1 transition-shadow duration-200 hover:shadow-md ${
-                isDesktop ? 'cursor-grab active:cursor-grabbing' : ''
+            draggable={isDesktop && task.status !== 'completed'}
+            onDragStart={(e) => isDesktop && task.status !== 'completed' && onDragStart(e, task.id)}
+            className={`bg-background p-4 rounded-lg shadow-sm border border-transparent w-64 md:w-full flex-shrink-0 md:flex-shrink-1 transition-shadow duration-200 hover:shadow-md ${
+                isDesktop
+                    ? task.status === 'completed'
+                        ? 'cursor-not-allowed opacity-70'
+                        : 'cursor-grab active:cursor-grabbing'
+                    : ''
             }`}
         >
             <h3 className="font-semibold text-foreground-primary mb-2 truncate">{task.title}</h3>

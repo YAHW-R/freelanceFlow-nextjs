@@ -135,20 +135,20 @@ export default function TimeTrackerPage() {
 
     return (
         <div className="mx-auto max-w-2xl space-y-8 animate-fade-in-up">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h1 className="text-3xl font-bold text-foreground-primary flex items-center">
                     <Clock size={28} className="mr-3 text-primary" />
                     Time Tracker
                 </h1>
                 <Link
                     href="/dashboard/time-traker/manual"
-                    className="inline-flex items-center rounded-md border border-background-secondary bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:bg-primary-hover"
+                    className="inline-flex items-center justify-center w-full sm:w-auto rounded-md border border-background-secondary bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:bg-primary-hover"
                 >
                     <PlusSquare size={18} className="mr-2" /> Registrar Horas Manualmente
                 </Link>
             </div>
 
-            <div className="bg-background-secondary p-8 rounded-lg shadow-md space-y-6">
+            <div className="bg-background-secondary p-4 sm:p-6 md:p-8 rounded-lg shadow-md space-y-6">
                 {/* Selección de Proyecto y Tarea */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -196,14 +196,14 @@ export default function TimeTrackerPage() {
 
                 {/* Temporizador y Controles */}
                 <div className="text-center bg-background p-6 rounded-lg">
-                    <p className="text-6xl font-mono font-bold text-foreground-primary tracking-wider">{formatTime(time)}</p>
+                    <p className="text-5xl sm:text-6xl font-mono font-bold text-foreground-primary tracking-wider">{formatTime(time)}</p>
                 </div>
 
-                <div className="flex items-center justify-center space-x-4">
+                <div className="flex flex-col sm:flex-row items-center justify-center sm:space-x-4 gap-4 sm:gap-0">
                     <button
                         onClick={handleStartStop}
                         disabled={!selectedProjectId || !selectedTaskId}
-                        className={`inline-flex items-center justify-center w-32 rounded-md px-4 py-3 text-lg font-semibold text-white shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${isRunning ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'}`}
+                        className={`inline-flex items-center justify-center w-full sm:w-32 rounded-md px-4 py-3 text-lg font-semibold text-white shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${isRunning ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'}`}
                     >
                         {isRunning ? <Pause size={24} className="mr-2" /> : <Play size={24} className="mr-2" />}
                         {isRunning ? 'Parar' : 'Iniciar'}
@@ -211,7 +211,7 @@ export default function TimeTrackerPage() {
                     <button
                         onClick={handleSubmitTime}
                         disabled={isRunning || isSubmitting || time === 0}
-                        className="inline-flex items-center justify-center w-32 rounded-md bg-primary px-4 py-3 text-lg font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="inline-flex items-center justify-center w-full sm:w-32 rounded-md bg-primary px-4 py-3 text-lg font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isSubmitting ? <Loader2 size={24} className="animate-spin" /> : <Save size={24} className="mr-2" />}
                         {isSubmitting ? '' : 'Guardar'}

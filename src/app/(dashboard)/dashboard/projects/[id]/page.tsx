@@ -81,16 +81,16 @@ export default async function ProjectPage(props: { params: Promise<{ id: string 
     return (
         <div className="space-y-8 animate-fade-in-up">
             {/* Encabezado del Proyecto */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex items-center space-x-4">
                     <Link href="/dashboard/projects" className="text-foreground-secondary hover:text-primary transition-colors">
                         <ArrowLeft size={24} />
                     </Link>
-                    <h1 className="text-4xl font-extrabold text-foreground-primary">{project.name}</h1>
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-foreground-primary">{project.name}</h1>
                 </div>
                 <Link
                     href={`/dashboard/projects/${project.id}/edit`}
-                    className="inline-flex items-center rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                    className="inline-flex items-center justify-center w-full md:w-auto rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 >
                     <Edit size={18} className="mr-2" /> Editar Proyecto
                 </Link>

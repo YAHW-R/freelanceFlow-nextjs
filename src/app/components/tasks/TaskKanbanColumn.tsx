@@ -44,8 +44,8 @@ export default function TaskKanbanColumn({
                     {tasks.length}
                 </span>
             </div>
-            {/* Cards Container: horizontal on mobile, vertical on desktop */}
-            <div className="flex flex-row md:flex-col md:space-y-4 space-x-4 md:space-x-0 overflow-x-auto md:overflow-y-auto custom-scrollbar md:h-full p-1 md:p-0 md:pr-2">
+            {/* Cards Container: vertical layout for all screens */}
+            <div className="flex flex-col space-y-4 p-1">
                 {tasks.map(task => (
                     <TaskKanbanCard
                         key={task.id}
@@ -53,8 +53,6 @@ export default function TaskKanbanColumn({
                         onDragStart={onTaskDragStart}
                     />
                 ))}
-                {/* Spacer for mobile to ensure padding on the right of the scroll */}
-                <div className="md:hidden flex-shrink-0 w-1"></div>
             </div>
         </div>
     );

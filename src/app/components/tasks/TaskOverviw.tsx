@@ -43,28 +43,6 @@ export default function TaskOverview({ projectId }: TaskOverviewProps) {
 
         fetchTasks();
 
-        // Opcional: Suscribirse a cambios en tiempo real si quieres que las tareas se actualicen
-        // automáticamente cuando se añaden, editan o eliminan.
-        const channel = supabase
-            .channel('tasks_channel')
-            .on(
-                'postgres_changes',
-                {
-                    event: '*', // INSERT, UPDATE, DELETE
-                    schema: 'public',
-                    table: 'tasks',
-                    filter: `project_id=eq.${projectId}`
-                },
-                (payload) => {
-                    console.log('Cambio en tareas detectado:', payload);
-                    fetchTasks(); // Vuelve a cargar las tareas cuando hay un cambio
-                }
-            )
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel); // Limpia la suscripción al desmontar el componente
-        };
     }, [projectId, supabase]); // Vuelve a ejecutar si el projectId o la instancia de supabase cambian
 
     const filteredTasks = useMemo(() => {
@@ -75,6 +53,8 @@ export default function TaskOverview({ projectId }: TaskOverviewProps) {
     const handleDeleteTask = async (taskId: string) => {
         try {
             await deleteTask(taskId);
+            // Actualizar la lista de tareas localmente
+            setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
         }
         catch (error: unknown) {
             if (error instanceof Error) {

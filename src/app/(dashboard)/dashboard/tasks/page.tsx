@@ -151,7 +151,7 @@ export default function TasksPage() {
     }
 
     return (
-        <div className="flex flex-col h-full p-4 md:p-6 space-y-4 bg-background">
+        <div className="flex flex-col h-full md:w-full p-4 md:p-6 space-y-4 bg-background">
             {/* Header and Action Buttons */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0 animate-fade-in-down">
                 <h1 className="text-2xl md:text-3xl font-bold text-foreground-primary text-center md:text-left">Tablero de Tareas</h1>

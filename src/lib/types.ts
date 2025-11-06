@@ -15,6 +15,7 @@ export interface Project {
     due_date?: string;
     hourly_rate?: number;
     billing_type: 'hourly' | 'fixed_price';
+    goals: string[];
     created_at: string;
 }
 

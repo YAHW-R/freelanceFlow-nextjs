@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { Plus, KanbanSquare, Filter, Search } from 'lucide-react';
+import { Plus, Filter, Search } from 'lucide-react';
 import { getProjects } from '@/app/actions/projectsActions';
 import { getClients } from '@/app/actions/clientActions';
 import { Project, ClientOptions, ProjectStatus } from '@/lib/types';
@@ -74,7 +74,7 @@ export default function ProjectsPage() {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[calc(100vh-128px)] text-foreground-secondary">
+            <div className="flex flex-col items-center justify-center min-h-[calc(100vh-128px)] w-full text-foreground-secondary">
                 <div className="flex items-center space-x-2 text-primary-hover">
                     <svg className="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

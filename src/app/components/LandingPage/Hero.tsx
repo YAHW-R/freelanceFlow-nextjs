@@ -11,7 +11,7 @@ export default function Hero() {
                             Todo lo que necesitas para gestionar tu negocio freelance
                         </h1>
                         <p className="mt-6 max-w-3xl mx-auto text-xl">
-                            La herramienta de geations centralizada para desarrolladores freelnacer. Diseñada específicamente para freelancers que buscan profesionalizar su negocio.
+                            La herramienta de geations centralizada para desarrolladores freelancer. Diseñada específicamente para freelancers que buscan profesionalizar su negocio.
                         </p>
                         <div className="mt-10 flex justify-center space-x-4">
                             <Link href="/register" className="px-6 py-3 rounded-md shadow-sm text-primary-hover bg-indigo-50 hover:bg-white transition">

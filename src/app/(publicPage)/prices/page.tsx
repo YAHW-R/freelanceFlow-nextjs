@@ -98,7 +98,7 @@ export default function Precios() {
                 {/* Guarantee */}
                 <div className="text-center mt-16 animate-fade-in-up animate-delay-400">
                     <p className="text-foreground-secondary text-lg font-medium">
-                        ⭐ Prueba cualquier plan pagado 14 días con garantía de devolución ⭐
+                        Prueba cualquier plan pagado 14 días con garantía de devolución
                     </p>
                 </div>
             </section>

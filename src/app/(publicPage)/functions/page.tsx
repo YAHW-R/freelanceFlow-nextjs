@@ -72,11 +72,15 @@ export default function Funcionalidades() {
 
             {/* Features Grid */}
             <section className="max-w-7xl mx-auto py-16 px-6 lg:px-8">
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-10">
                     {features.map((feature, i) => (
                         <div
                             key={i}
-                            className={`bg-background-secondary rounded-xl shadow-md p-6 border border-background hover:shadow-lg transition animate-fade-in-up animate-delay-${i + 1}00`}
+                            className={`text-left bg-background-secondary rounded-xl shadow-md p-6 border border-background hover:shadow-lg transition animate-fade-in-up animate-delay-${
+                                i + 1
+                            }00 lg:col-span-2 ${
+                                i === 3 ? "lg:col-start-2" : ""
+                            } ${i === 4 ? "sm:col-span-2" : ""}`}
                         >
                             <div className="flex items-center justify-center h-12 w-12 rounded-md bg-background-secondary text-primary mb-4">
                                 {<feature.icon className="h-6 w-6" aria-hidden="true" />}

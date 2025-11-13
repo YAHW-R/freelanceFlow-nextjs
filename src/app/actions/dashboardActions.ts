@@ -17,7 +17,7 @@ export async function fetchDashboardData() {
     // Fetch projects
     const { data: projects, error: projectsError } = await supabase
         .from('projects')
-        .select('*')
+        .select('*, goals(*)')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
 

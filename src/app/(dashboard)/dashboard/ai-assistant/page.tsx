@@ -1,162 +1,124 @@
-'use client'; // Client Component para la interactividad del chat
+'use client'
 
-import { useState, useRef, useEffect, FormEvent } from 'react';
-import { Bot, User2, Send, Wand2, Loader2, MessageSquareText } from 'lucide-react';
-import { makeRequest } from '@/app/actions/AiActions';
-import MarkdownRenderer from '@/app/components/ai-assist/MarkdownRender';
+import { useState, useRef, useEffect } from 'react';
+import { chatWithGemini } from '@/app/actions/AiActions';
+import ReactMarkdown from 'react-markdown';
 
-interface Message {
-    id: string;
-    sender: 'user' | 'ai';
+// Definimos la estructura del mensaje
+type Message = {
+    role: 'user' | 'ai';
     content: string;
-    timestamp: Date;
-}
+};
 
-export default function AIChatPage() {
+export default function AiChat() {
     const [messages, setMessages] = useState<Message[]>([]);
-    const [input, setInput] = useState<string>('');
-    const [isSending, setIsSending] = useState<boolean>(false);
+    const [input, setInput] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
+    // Scroll automático al último mensaje
     useEffect(() => {
-        // Scroll al final cuando se añaden nuevos mensajes
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    const handleSendMessage = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
-        e.preventDefault();
-        if (!input.trim()) return;
+    const handleSend = async () => {
+        if (!input.trim() || isLoading) return;
 
-        const userMessage: Message = {
-            id: Date.now().toString() + '-user',
-            sender: 'user',
-            content: input.trim(),
-            timestamp: new Date(),
-        };
-
-        setMessages((prev) => [...prev, userMessage]);
+        const userMessage = input;
         setInput('');
-        setIsSending(true);
+        setIsLoading(true);
 
-        try {
-            const aiResponseContent = await makeRequest(userMessage.content);
+        // 1. Agregar mensaje del usuario inmediatamente a la UI
+        setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
 
-            const aiMessage: Message = {
-                id: Date.now().toString() + '-ai',
-                sender: 'ai',
-                content: aiResponseContent as string,
-                timestamp: new Date(),
-            };
-            setMessages((prev) => [...prev, aiMessage]);
+        // 2. Llamar al Server Action
+        const result = await chatWithGemini(userMessage);
 
-        } catch (err) {
-            console.error('Error al comunicarse con la IA:', err);
-            setMessages((prev) => [
-                ...prev,
-                {
-                    id: Date.now().toString() + '-error',
-                    sender: 'ai',
-                    content: 'Lo siento, hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo.',
-                    timestamp: new Date(),
-                },
-            ]);
-        } finally {
-            setIsSending(false);
+        // 3. Procesar respuesta
+        if (result.error) {
+            setMessages((prev) => [...prev, { role: 'ai', content: `⚠️ Error: ${result.error}` }]);
+        } else {
+            // Aquí recibimos el texto final (ya sea respuesta de chat o confirmación de acción)
+            // Asegurarnos de que content siempre sea una cadena (evita undefined)
+            setMessages((prev) => [...prev, { role: 'ai', content: result.data ?? '' }]);
         }
+        setIsLoading(false);
     };
 
     return (
-        <div className="flex flex-col h-[calc(100vh-120px)] bg-background-secondary rounded-lg shadow-md animate-fade-in-up">
-            {/* Encabezado del Chat */}
-            <div className="flex items-center space-x-3 p-4 border-b border-gray-200 bg-background-secondary rounded-t-lg">
-                <Wand2 size={24} className="text-primary" />
-                <h1 className="text-xl font-bold text-foreground-primary">Asistente IA</h1>
+        // Contenedor principal: ocupa toda la altura disponible, fondo base
+        <div className="flex flex-col h-[85vh] bg-[var(--background)] rounded-xl overflow-hidden shadow-lg border border-[var(--background-secondary)]">
+
+            {/* Header del Chat */}
+            <div className="p-4 border-b border-[var(--background-secondary)] bg-[var(--background)] flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+                <h2 className="font-semibold text-lg text-[var(--foreground)]">FlowBot AI</h2>
             </div>
 
-            {/* Área de Mensajes */}
+            {/* Área de Mensajes (Scrollable) */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {messages.length === 0 && !isSending && (
-                    <div className="flex flex-col items-center justify-center h-full text-foreground-secondary">
-                        <MessageSquareText size={48} className="text-primary opacity-60 mb-4" />
-                        <p className="text-lg text-center">
-                            ¡Hola! Soy tu asistente IA. ¿En qué puedo ayudarte hoy?
-                            <br />
-                            Puedes preguntarme sobre tus proyectos, tareas, o cualquier otra cosa.
-                        </p>
+                {messages.length === 0 && (
+                    <div className="text-center text-gray-500 mt-10 opacity-60">
+                        <p>¡Hola! Soy tu asistente.</p>
+                        <p className="text-sm">{`Prueba decir: "Crea una tarea para revisar el diseño"`}</p>
                     </div>
                 )}
 
-                {messages.map((message) => (
+                {messages.map((msg, idx) => (
                     <div
-                        key={message.id}
-                        className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                        key={idx}
+                        className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                         <div
-                            className={`max-w-[70%] rounded-lg p-3 ${message.sender === 'user'
-                                ? 'bg-primary text-foreground'
-                                : 'bg-background text-foreground'
-                                } shadow-sm`}
+                            className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${msg.role === 'user'
+                                    ? 'bg-[var(--primary)] text-white rounded-br-none' // Usuario: Color Primario
+                                    : 'bg-[var(--background-secondary)] text-[var(--foreground)] rounded-bl-none' // AI: Fondo Secundario
+                                }`}
                         >
-                            <div className="flex items-center space-x-2 text-xs mb-1">
-                                {message.sender === 'user' ? (
-                                    <>
-                                        <User2 size={12} className="text-white" />
-                                        <span className="font-semibold text-white">Tú</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Bot size={12} className="text-primary" />
-                                        <span className="font-semibold text-primary">Asistente</span>
-                                    </>
-                                )}
-                                <span className={`text-opacity-80 ${message.sender === 'user' ? 'text-foreground' : 'text-foreground-secondary'}`}>
-                                    {message.timestamp.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                            </div>
-                            {message.sender === 'user' ? (
-                                <p className="text-sm">{message.content}</p> // Los mensajes del usuario no suelen ser Markdown
-                            ) : (
-                                <MarkdownRenderer content={message.content} className="text-sm" /> // Mensajes de la IA sí son Markdown
-                            )}
+                            {/* Renderizar Markdown para respuestas ricas de la IA */}
+                            <ReactMarkdown>{msg.content}</ReactMarkdown>
                         </div>
                     </div>
                 ))}
 
-                {isSending && (
+                {isLoading && (
                     <div className="flex justify-start">
-                        <div className="max-w-[70%] rounded-lg p-3 bg-gray-100 text-foreground-primary shadow-sm flex items-center space-x-2">
-                            <Loader2 size={16} className="animate-spin text-primary" />
-                            <span className="text-sm italic">Escribiendo...</span>
+                        <div className="bg-[var(--background-secondary)] px-4 py-3 rounded-2xl rounded-bl-none text-sm text-gray-500">
+                            <span className="animate-pulse">Procesando solicitud...</span>
                         </div>
                     </div>
                 )}
-                <div ref={messagesEndRef} /> {/* Para el scroll automático */}
+                <div ref={messagesEndRef} />
             </div>
 
-            {/* Input de Mensajes */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 bg-background-secondary rounded-b-lg flex items-center space-x-3">
-                <textarea
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="Escribe tu mensaje aquí..."
-                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2.5 resize-none max-h-24 overflow-y-auto"
-                    rows={1}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) { // Permite Shift+Enter para nueva línea
-                            e.preventDefault();
-                            handleSendMessage(e as unknown as FormEvent<HTMLFormElement>);
-                        }
-                    }}
-                    disabled={isSending}
-                />
-                <button
-                    type="submit"
-                    className="rounded-full bg-primary p-3 text-white shadow-sm transition-colors duration-200 hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={!input.trim() || isSending}
-                >
-                    {isSending ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
-                </button>
-            </form>
+            {/* Área de Input (Fija abajo) */}
+            <div className="p-4 bg-[var(--background)] border-t border-[var(--background-secondary)]">
+                <div className="flex gap-2 relative">
+                    <input
+                        type="text"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                        placeholder="Escribe un mensaje o pide crear una tarea..."
+                        className="flex-1 bg-[var(--background-secondary)] text-[var(--foreground)] rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] placeholder-gray-400 transition-all"
+                        disabled={isLoading}
+                    />
+                    <button
+                        onClick={handleSend}
+                        disabled={isLoading || !input.trim()}
+                        className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] active:bg-[var(--primary-active)] text-white rounded-full p-3 px-6 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {/* Icono de enviar simple */}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                        </svg>
+                    </button>
+                </div>
+                <div className="text-xs text-center mt-2 text-gray-400">
+                    {/* Pequeño disclaimer o info de uso */}
+                    IA potenciada por Gemini • 5 mensajes diarios
+                </div>
+            </div>
         </div>
     );
 }

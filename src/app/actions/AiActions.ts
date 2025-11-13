@@ -1,50 +1,119 @@
 'use server'
 
-import { GoogleGenAI, GoogleGenAIOptions } from "@google/genai";
-import { getFullData } from "./globalActions";
+import { createClient } from '@/lib/supabase/server'; // Tu cliente de Supabase
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export const makeRequest = async (prompt: string) => {
-    const options: GoogleGenAIOptions = {
-        apiKey: process.env.GOOGLE_API_KEY,
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+
+export async function chatWithGemini(userQuery: string) {
+    const supabase = await createClient();
+
+    // 1. Autenticación (Vital para crear registros)
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: 'Debes iniciar sesión.' };
+
+    // ... (Aquí iría tu lógica de Rate Limiting de la respuesta anterior) ...
+
+    // 2. Obtener contexto mínimo (para que la IA sepa a qué proyecto asignar la tarea si el usuario dice "en el proyecto web")
+    const { data: projects } = await supabase.from('projects').select('id, name').eq('user_id', user.id);
+
+    // 3. Definir el "System Prompt" con instrucciones estrictas de JSON
+    const systemPrompt = `
+    Eres un asistente de gestión de proyectos. Tienes acceso a estos proyectos del usuario: ${JSON.stringify(projects)}.
+
+    TU OBJETIVO:
+    Analiza si el usuario quiere CHATEAR o EJECUTAR UNA ACCIÓN (Crear tarea, proyecto, cliente).
+    
+    IMPORTANTE:
+    Si el usuario quiere crear algo, DEBES responder SOLO con un objeto JSON estrictamente válido dentro de un bloque de código json. No añadas texto extra fuera del JSON.
+    
+    FORMATOS DE JSON ESPERADOS:
+
+    A) Para crear TAREA:
+    \`\`\`json
+    {
+      "intent": "create_task",
+      "data": {
+        "title": "Título de la tarea",
+        "project_id": "ID del proyecto (si se menciona uno existente, si no null)",
+        "priority": "low" | "medium" | "high" (inferido o default medium)
+      },
+      "response_text": "He creado la tarea..."
     }
-    const ai = new GoogleGenAI(options);
+    \`\`\`
 
-    const userData = await getFullData()
+    B) Para crear PROYECTO:
+    \`\`\`json
+    {
+      "intent": "create_project",
+      "data": { "name": "Nombre del proyecto", "status": "active" },
+      "response_text": "Proyecto creado con éxito..."
+    }
+    \`\`\`
 
-    const fullPrompt = `
-                You are FreelanceFlow AI Assistant, an expert project manager and business analyst specifically designed to help freelance developers manage their work.
-                Your primary goal is to provide insightful analysis, actionable summaries, and clear answers based on the user's provided data context.
-                When responding, prioritize clarity, conciseness, and helpfulness. Focus on business-oriented insights relevant to project management, client relations, time tracking, and financial performance for a freelance developer.
-                
-                **Instructions for Response:**
-                -   **Always ground your answers in the provided data.** If a request cannot be answered with the given data, state that gracefully.
-                -   **Structure complex answers with Markdown:** Use headings, bullet points, numbered lists, and bold text for readability.
-                -   **Be precise with numerical data:** When providing metrics (budgets, hours, progress), use the exact numbers from the data and state the units clearly (e.g., "€15,000", "45.5 horas", "80% de progreso").
-                -   **Highlight key takeaways:** If summarizing, point out important trends, potential issues (e.g., "Proyecto X está por encima del presupuesto"), or areas for improvement.
-                -   **Avoid conversational filler:** Get straight to the point unless the user's prompt specifically asks for a more elaborate explanation.
-                -   **Adopt a professional and helpful tone.**
-                
-                **User Data Context:**
-                \`\`\`json
-                ${JSON.stringify(userData, null, 2)}
-                \`\`\`
-                
-                **User's Request:**
-                "${prompt}"
-                
-                Please provide your analysis and response based on the above.
-                `;
+    C) Si es solo conversación:
+    \`\`\`json
+    {
+      "intent": "chat",
+      "response_text": "Tu respuesta normal aquí..."
+    }
+    \`\`\`
+  `;
 
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Flash es perfecto para esto
 
-    const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: fullPrompt,
-    });
+        const result = await model.generateContent([
+            systemPrompt,
+            `Usuario: ${userQuery}`
+        ]);
 
-    return response.text
+        const rawText = result.response.text();
 
-}
+        // 4. Limpieza y Parseo del JSON
+        // A veces la IA pone ```json al principio y ``` al final. Lo limpiamos.
+        const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
 
-export const createTaskWithAi = async () => {
+        let aiResponse;
+        try {
+            aiResponse = JSON.parse(cleanJson);
+        } catch {
+            // Si falla el parseo, asumimos que fue una respuesta de texto normal
+            return { success: true, data: rawText };
+        }
 
+        // 5. Ejecutar Acciones en Supabase según el "intent"
+        if (aiResponse.intent === 'create_task') {
+
+            const { error } = await supabase.from('tasks').insert({
+                user_id: user.id,
+                title: aiResponse.data.title,
+                project_id: aiResponse.data.project_id,
+                priority: aiResponse.data.priority || 'medium',
+                status: 'todo'
+            });
+
+            if (error) return { success: true, data: `❌ Error creando tarea: ${error.message}` };
+            return { success: true, data: `✅ ${aiResponse.response_text}` };
+
+        } else if (aiResponse.intent === 'create_project') {
+
+            const { error } = await supabase.from('projects').insert({
+                user_id: user.id,
+                name: aiResponse.data.name,
+                status: 'active'
+            });
+
+            if (error) return { success: true, data: `❌ Error creando proyecto: ${error.message}` };
+            return { success: true, data: `✅ ${aiResponse.response_text}` };
+
+        } else {
+            // Es solo chat normal
+            return { success: true, data: aiResponse.response_text };
+        }
+
+    } catch (error) {
+        console.error('Error AI:', error);
+        return { error: 'Error procesando la solicitud.' };
+    }
 }

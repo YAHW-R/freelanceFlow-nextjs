@@ -10,13 +10,14 @@ import {
     Info,
     CheckCircle,
     PauseCircle,
-    Clock
+    Clock,
+    Target
 } from 'lucide-react';
 
-// Importamos el Client Component para mostrar las tareas del proyecto
+import GoalItem from '@/app/components/projects/GoalItem';
 import TaskOverview from '@/app/components/tasks/TaskOverviw'; // Importamos el Client Component
 // Importa el tipo Project si lo tienes definido
-import type { Project } from '@/lib/types';
+import type { Project, Goal } from '@/lib/types';
 
 // Extendemos el tipo Project para incluir el nombre del cliente
 export interface ProjectDetails extends Project {
@@ -45,7 +46,7 @@ export default async function ProjectPage(props: { params: Promise<{ id: string 
     // Obtener los detalles del proyecto y el nombre del cliente
     const { data: project, error } = await supabase
         .from('projects')
-        .select('*, clients(name)') // Seleccionamos el proyecto y el nombre del cliente relacionado
+        .select('*, goals(*), clients(name)') // Seleccionamos el proyecto y el nombre del cliente relacionado
         .eq('id', id)
         .eq('user_id', user.id) // Aseguramos que el usuario solo vea sus propios proyectos
         .single();
@@ -58,6 +59,12 @@ export default async function ProjectPage(props: { params: Promise<{ id: string 
         // Podrías redirigir a una página de error o mostrar un mensaje
         redirect('/dashboard/projects?error=failed_to_load_project');
     }
+
+    // Calculate progress
+    const totalGoals = project.goals?.length || 0;
+    const completedGoals = project.goals?.filter((g: Goal) => g.is_complete).length || 0;
+    const progress = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
+
 
     // Helper para obtener el icono y el color del estado
     const getStatusDisplay = (status: ProjectDetails['status']) => {
@@ -129,6 +136,18 @@ export default async function ProjectPage(props: { params: Promise<{ id: string 
                         </p>
                     </div>
                 </div>
+
+                {/* Progress Bar */}
+                <div className="pt-6">
+                    <p className="text-sm font-medium text-gray-500">Progreso del Proyecto</p>
+                    <div className="flex items-center gap-4 mt-2">
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
+                        </div>
+                        <span className="text-lg font-semibold text-foreground-primary">{progress}%</span>
+                    </div>
+                </div>
+
                 {project.description && (
                     <div className="mt-6 border-t border-gray-200 pt-6">
                         <p className="text-sm font-medium text-gray-500">Descripción:</p>
@@ -136,6 +155,21 @@ export default async function ProjectPage(props: { params: Promise<{ id: string 
                     </div>
                 )}
             </div>
+
+            {/* Objetivos del Proyecto */}
+            {project.goals && project.goals.length > 0 && (
+                <div className="bg-background-secondary p-8 rounded-lg shadow-md animate-fade-in-down animation-delay-200">
+                    <h2 className="text-2xl font-bold text-foreground-primary border-b border-gray-200 pb-4 flex items-center space-x-2">
+                        <Target size={24} className="text-primary" />
+                        <span>Objetivos del Proyecto</span>
+                    </h2>
+                    <ul className="space-y-4 mt-6">
+                        {project.goals.map((goal: Goal) => (
+                            <GoalItem key={goal.id} goal={goal} projectId={project.id} />
+                        ))}
+                    </ul>
+                </div>
+            )}
 
             {/* Componente de Tareas */}
             <TaskOverview projectId={project.id} />

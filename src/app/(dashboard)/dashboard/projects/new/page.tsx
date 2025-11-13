@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { Loader2, PlusCircle } from 'lucide-react'; // Iconos
+import { Loader2, PlusCircle, X } from 'lucide-react'; // Iconos
 import { createProject } from '@/app/actions/projectsActions';
 import { getClients } from '@/app/actions/clientActions';
 import { ProjectStatus, ClientOptions } from '@/lib/types';
@@ -29,12 +29,29 @@ export default function NewProjectPage() {
     const [name, setName] = useState<string>('');
     const [clientId, setClientId] = useState<string>('');
     const [description, setDescription] = useState<string>('');
+    const [goals, setGoals] = useState<{ name: string; description: string }[]>([]);
 
 
     const [status, setStatus] = useState<ProjectStatus>('pending'); // Estado inicial por defecto
     const [billingType, setBillingType] = useState<'hourly' | 'fixed_price'>('fixed_price');
     const [dueDate, setDueDate] = useState<string>(''); // Formato 'YYYY-MM-DD'
     const [budget, setBudget] = useState<number | ''>(''); // Presupuesto opcional
+
+    // Handlers para los objetivos
+    const handleAddGoal = () => {
+        setGoals([...goals, { name: '', description: '' }]);
+    };
+
+    const handleRemoveGoal = (index: number) => {
+        setGoals(goals.filter((_, i) => i !== index));
+    };
+
+    const handleGoalChange = (index: number, field: 'name' | 'description', value: string) => {
+        const newGoals = [...goals];
+        newGoals[index][field] = value;
+        setGoals(newGoals);
+    };
+
 
     useEffect(() => {
         async function fetchClients() {
@@ -76,13 +93,12 @@ export default function NewProjectPage() {
             const formData = {
                 name,
                 client_id: clientId,
-                description: description || undefined, // undefined para que Supabase use null si no hay descripción
+                description: description || undefined,
                 status,
                 billing_type: billingType,
                 due_date: dueDate ? new Date(dueDate).toISOString() : undefined,
                 budget: budget === '' ? undefined : budget,
-                goals: [], // Inicialmente vacío
-                created_at: new Date().toISOString() // Set current timestamp
+                goals: goals.filter(goal => goal.name.trim() !== ''), // Only send goals with a name
             };
 
             await createProject(formData);
@@ -282,6 +298,59 @@ export default function NewProjectPage() {
                         step="0.01"
                     />
                 </div>
+
+                {/* Objetivos del Proyecto */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-medium text-foreground-primary">Objetivos del Proyecto</h3>
+                    {goals.map((goal, index) => (
+                        <div key={index} className="p-4 border border-gray-200 rounded-lg space-y-3 relative">
+                            <button
+                                type="button"
+                                onClick={() => handleRemoveGoal(index)}
+                                className="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors"
+                                aria-label="Eliminar objetivo"
+                            >
+                                <X size={18} />
+                            </button>
+                            <div>
+                                <label htmlFor={`goal-name-${index}`} className="block text-sm font-medium text-foreground-secondary">
+                                    Nombre del Objetivo
+                                </label>
+                                <input
+                                    type="text"
+                                    id={`goal-name-${index}`}
+                                    value={goal.name}
+                                    onChange={(e) => handleGoalChange(index, 'name', e.target.value)}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2"
+                                    placeholder="Ej: Finalizar el diseño del prototipo"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor={`goal-description-${index}`} className="block text-sm font-medium text-foreground-secondary">
+                                    Descripción del Objetivo (Opcional)
+                                </label>
+                                <textarea
+                                    id={`goal-description-${index}`}
+                                    rows={2}
+                                    value={goal.description}
+                                    onChange={(e) => handleGoalChange(index, 'description', e.target.value)}
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2"
+                                    placeholder="Detalles sobre qué implica este objetivo."
+                                ></textarea>
+                            </div>
+                        </div>
+                    ))}
+                    <button
+                        type="button"
+                        onClick={handleAddGoal}
+                        className="flex items-center space-x-2 text-sm font-medium text-primary hover:text-primary-hover transition-colors"
+                    >
+                        <PlusCircle size={18} />
+                        <span>Añadir Objetivo</span>
+                    </button>
+                </div>
+
 
                 {error && (
                     <p className="text-sm text-red-600 animate-fade-in">{error}</p>

@@ -13,10 +13,18 @@ export interface Project {
     budget?: number;
     start_data?: string;
     due_date?: string;
+    goals?: Goal[];
     hourly_rate?: number;
     billing_type: 'hourly' | 'fixed_price';
-    goals: string[];
     created_at: string;
+}
+
+export interface Goal {
+    id: string;
+    name: string;
+    description?: string;
+    project_id: string;
+    is_complete: boolean;
 }
 
 export interface Profile {

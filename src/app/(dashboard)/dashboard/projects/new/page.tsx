@@ -7,7 +7,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { Loader2, PlusCircle, X } from 'lucide-react'; // Iconos
 import { createProject } from '@/app/actions/projectsActions';
 import { getClients } from '@/app/actions/clientActions';
-import { ProjectStatus, ClientOptions } from '@/lib/types';
+import { ProjectStatus, ClientOptions, ProjectFormData, GoalFormData } from '@/lib/types';
 
 
 import Link from 'next/link';
@@ -29,7 +29,7 @@ export default function NewProjectPage() {
     const [name, setName] = useState<string>('');
     const [clientId, setClientId] = useState<string>('');
     const [description, setDescription] = useState<string>('');
-    const [goals, setGoals] = useState<{ name: string; description: string }[]>([]);
+    const [goals, setGoals] = useState<GoalFormData[]>([]);
 
 
     const [status, setStatus] = useState<ProjectStatus>('pending'); // Estado inicial por defecto
@@ -39,7 +39,7 @@ export default function NewProjectPage() {
 
     // Handlers para los objetivos
     const handleAddGoal = () => {
-        setGoals([...goals, { name: '', description: '' }]);
+        setGoals([...goals, { name: '', description: '', is_complete: false }]);
     };
 
     const handleRemoveGoal = (index: number) => {
@@ -90,7 +90,7 @@ export default function NewProjectPage() {
 
         try {
             // TODO: Reemplaza 'userId' con el valor real del usuario autenticado
-            const formData = {
+            const formData: ProjectFormData = {
                 name,
                 client_id: clientId,
                 description: description || undefined,

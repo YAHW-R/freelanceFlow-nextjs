@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from "@/lib/supabase/server";
-import type { Project, Goal } from "@/lib/types";
+import type { Project, Goal, ProjectFormData } from "@/lib/types";
 import { redirect } from "next/navigation";
 
 
@@ -59,11 +59,6 @@ export async function updateProjectProgress(projectId: string, newProgress: numb
     }
 }
 
-// Tipos para manejar los datos del formulario de manera segura
-type GoalFormData = Omit<Goal, 'id' | 'project_id'>;
-type ProjectFormData = Omit<Project, 'id' | 'created_at' | 'user_id' | 'progress' | 'goals'> & {
-    goals?: GoalFormData[];
-};
 
 export async function createProject(projectData: ProjectFormData) {
     const supabase = await createClient();
@@ -93,6 +88,7 @@ export async function createProject(projectData: ProjectFormData) {
             name: goal.name,
             description: goal.description,
             project_id: newProject.id,
+            is_complete: false,
         }));
 
         const { error: goalsError } = await supabase
@@ -214,66 +210,65 @@ export async function updateProject(projectId: string, projectData: UpdateProjec
         }
     }
 
-        // Return the updated project or just a success message
+    // Return the updated project or just a success message
 
-        return { success: true, message: 'Project updated successfully.' };
+    return { success: true, message: 'Project updated successfully.' };
 
-    }
+}
 
-    
 
-    export async function updateGoalStatus(goalId: string, isComplete: boolean, projectId: string) {
 
-        const supabase = await createClient();
+export async function updateGoalStatus(goalId: string, isComplete: boolean, projectId: string) {
 
-        const { error } = await supabase
+    const supabase = await createClient();
 
-            .from('goals')
+    const { error } = await supabase
 
-            .update({ is_complete: isComplete })
+        .from('goals')
 
-            .eq('id', goalId);
+        .update({ is_complete: isComplete })
 
-    
+        .eq('id', goalId);
 
-        if (error) {
 
-            throw new Error(`Error updating goal status: ${error.message}`);
 
-        }
+    if (error) {
 
-    
-
-        // After updating a goal, recalculate and update the project's progress
-
-        const { data: projectGoals, error: goalsError } = await supabase
-
-            .from('goals')
-
-            .select('is_complete')
-
-            .eq('project_id', projectId);
-
-    
-
-        if (goalsError) {
-
-            throw new Error(`Error fetching goals to recalculate progress: ${goalsError.message}`);
-
-        }
-
-    
-
-        const completedGoals = projectGoals.filter(goal => goal.is_complete).length;
-
-        const totalGoals = projectGoals.length;
-
-        const newProgress = totalGoals > 0 ? (completedGoals / totalGoals) * 100 : 0;
-
-    
-
-        await updateProjectProgress(projectId, newProgress);
+        throw new Error(`Error updating goal status: ${error.message}`);
 
     }
 
-    
+
+
+    // After updating a goal, recalculate and update the project's progress
+
+    const { data: projectGoals, error: goalsError } = await supabase
+
+        .from('goals')
+
+        .select('is_complete')
+
+        .eq('project_id', projectId);
+
+
+
+    if (goalsError) {
+
+        throw new Error(`Error fetching goals to recalculate progress: ${goalsError.message}`);
+
+    }
+
+
+
+    const completedGoals = projectGoals.filter(goal => goal.is_complete).length;
+
+    const totalGoals = projectGoals.length;
+
+    const newProgress = totalGoals > 0 ? (completedGoals / totalGoals) * 100 : 0;
+
+
+
+    await updateProjectProgress(projectId, newProgress);
+
+}
+

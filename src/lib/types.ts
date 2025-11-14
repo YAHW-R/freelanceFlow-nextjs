@@ -27,6 +27,11 @@ export interface Goal {
     is_complete: boolean;
 }
 
+export type GoalFormData = Omit<Goal, 'id' | 'project_id'>;
+export type ProjectFormData = Omit<Project, 'id' | 'created_at' | 'user_id' | 'progress' | "goals"> & {
+    goals?: GoalFormData[];
+};
+
 export interface Profile {
     id: string;
     username: string;

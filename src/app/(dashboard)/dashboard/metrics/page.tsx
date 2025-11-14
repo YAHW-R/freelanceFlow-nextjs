@@ -240,11 +240,18 @@ export default function MetricsPage() {
         );
     }
 
+    const timeframeMap: { [key in Timeframe]: string } = {
+        '7d': 'Últimos 7 Días',
+        '30d': 'Últimos 30 Días',
+        '90d': 'Últimos 90 Días',
+        'ytd': 'Este Año'
+    };
+
     return (
         <div className="space-y-8">
             {/* Encabezado */}
-            <div className="flex items-center justify-between animate-fade-in-down">
-                <h1 className="text-3xl font-bold text-foreground-primary">Métricas y Reportes</h1>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 animate-fade-in-down">
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground-primary">Métricas y Reportes</h1>
                 <div className="flex items-center space-x-2">
                     <label htmlFor="timeframe" className="text-sm font-medium text-foreground-secondary">Periodo:</label>
                     <select
@@ -265,7 +272,7 @@ export default function MetricsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in-down animation-delay-100">
                 <div className="bg-background-secondary rounded-lg shadow-md p-6 flex items-center justify-between">
                     <div>
-                        <p className="text-sm font-medium text-foreground-secondary">Ingresos ({timeframe === 'ytd' ? 'Año' : 'Periodo'})</p>
+                        <p className="text-sm font-medium text-foreground-secondary">Ingresos ({timeframeMap[timeframe]})</p>
                         <p className="text-2xl font-bold text-primary mt-1">€{metrics.income.toLocaleString('es-ES')}</p>
                     </div>
                     <TrendingUp size={36} className="text-primary-hover opacity-70" />

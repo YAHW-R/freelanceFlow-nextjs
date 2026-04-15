@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FreelanceFlow 🚀
 
-## Getting Started
+**FreelanceFlow** es una plataforma integral diseñada para que los freelancers gestionen sus proyectos, clientes, tareas y finanzas de manera eficiente. Potenciada por Inteligencia Artificial, ayuda a automatizar el flujo de trabajo y ofrece una visión clara del progreso y la productividad.
 
-First, run the development server:
+## ✨ Características Principales
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+-   **Dashboard Inteligente:** Resumen visual de proyectos activos, tareas pendientes y métricas clave.
+-   **Gestión de Proyectos:** Crea y organiza tus proyectos, asigna clientes y realiza un seguimiento detallado del progreso.
+-   **Tablero Kanban de Tareas:** Organiza tu trabajo diario con un sistema de arrastrar y soltar (en desarrollo), prioridades y estados personalizables.
+-   **Asistente IA (Gemini):** Un copiloto integrado que permite crear tareas y proyectos mediante lenguaje natural, además de responder consultas sobre tu gestión.
+-   **Gestión de Clientes:** Directorio de contactos con historial de proyectos y facturación asociada.
+-   **Métricas y Analíticas:** Gráficas interactivas para visualizar tu productividad y el estado de tus proyectos.
+-   **Seguimiento de Tiempo:** Registra las horas invertidas en cada tarea para una facturación más precisa.
+-   **Facturación:** Generación y gestión de facturas para tus clientes.
+
+## 🛠️ Stack Tecnológico
+
+-   **Frontend:** [Next.js 15](https://nextjs.org/) (App Router), [TypeScript](https://www.typescriptlang.org/)
+-   **Estilos:** [Tailwind CSS 4](https://tailwindcss.com/)
+-   **Backend & Auth:** [Supabase](https://supabase.com/) (SSR)
+-   **IA:** [Google Generative AI](https://ai.google.dev/) (Gemini 1.5 Flash)
+-   **Gráficas:** [Recharts](https://recharts.org/)
+-   **Iconos:** [Lucide React](https://lucide.dev/) & [React Icons](https://react-icons.github.io/react-icons/)
+
+## 🚀 Inicio Rápido
+
+### Requisitos Previos
+
+-   [Node.js](https://nodejs.org/) (v18 o superior)
+-   Una cuenta en [Supabase](https://supabase.com/)
+-   Una API Key de [Google AI Studio](https://aistudio.google.com/)
+
+### Instalación
+
+1.  **Clona el repositorio:**
+    ```bash
+    git clone https://github.com/tu-usuario/freelanceflow-web.git
+    cd freelanceflow-web
+    ```
+
+2.  **Instala las dependencias:**
+    ```bash
+    npm install
+    ```
+
+3.  **Configura las variables de entorno:**
+    Crea un archivo `.env.local` en la raíz del proyecto y añade tus credenciales:
+    ```env
+    # Supabase
+    NEXT_PUBLIC_SUPABASE_URL=tu_url_de_supabase
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key_de_supabase
+
+    # Google AI (Gemini)
+    GOOGLE_API_KEY=tu_google_api_key
+    ```
+
+4.  **Ejecuta el servidor de desarrollo:**
+    ```bash
+    npm run dev
+    ```
+    Abre [http://localhost:3000](http://localhost:3000) en tu navegador para ver la aplicación.
+
+## 📁 Estructura del Proyecto
+
+```text
+src/
+├── app/              # Rutas (App Router), Layouts y Server Actions
+│   ├── (auth)/       # Páginas de Login, Registro y Autenticación
+│   ├── (dashboard)/  # Área principal de la aplicación (Proyectos, Tareas, etc.)
+│   ├── (publicPage)/ # Landing page y páginas públicas
+│   └── actions/      # Lógica de servidor (Server Actions)
+├── components/       # Componentes de UI reutilizables
+├── lib/              # Configuraciones de Supabase, tipos y utilidades
+└── assets/           # Imágenes y recursos estáticos
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📝 Scripts Disponibles
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+-   `npm run dev`: Inicia el servidor de desarrollo.
+-   `npm run build`: Crea la versión de producción de la aplicación.
+-   `npm run start`: Inicia la aplicación en modo producción.
+-   `npm run lint`: Ejecuta ESLint para revisar el código.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛡️ Base de Datos
 
-## Learn More
+El proyecto utiliza **Supabase (PostgreSQL)**. Asegúrate de tener las siguientes tablas creadas (o usa el editor SQL de Supabase para definirlas):
+- `profiles`: Datos de usuario.
+- `projects`: Información de los proyectos.
+- `tasks`: Tareas asociadas a proyectos y usuarios.
+- `clients`: Información de los clientes.
+- `time_tracking`: Registros de tiempo.
+- `invoices`: Facturas generadas.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+Desarrollado con ❤️ para freelancers.

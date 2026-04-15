@@ -11,6 +11,16 @@ import { Sparkles, CalendarCheck, TrendingUp, DollarSign } from 'lucide-react';
 
 import { getUserProfile } from '@/app/actions/profileActions';
 
+const getDateRange = (): { from: Date, to: Date } => {
+    const to = new Date();
+    const from = new Date();
+
+    from.setDate(to.getDate() - 30);
+    from.setHours(0, 0, 0, 0);
+    to.setHours(23, 59, 59, 999);
+    return { from, to };
+};
+
 export default function DashboardPage() {
 
     const [profile, setProfile] = useState<Profile>({
@@ -27,11 +37,14 @@ export default function DashboardPage() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [clients, setClients] = useState<Client[]>([]);
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [income, setIncome] = useState<number>(0);
 
     const tasksDueToday = tasks.filter(task => task.due_date === 'Hoy').length;
 
 
     const projectsInProgress = projects.filter(project => project.status === 'in_progress').length;
+
+
 
     useEffect(() => {
         // Aquí podrías cargar el perfil del usuario si es necesario
@@ -46,6 +59,12 @@ export default function DashboardPage() {
             setProjects(data.projects || []);
             setClients(data.clients || []);
             setTasks(data.tasks || []);
+
+            const { from, to } = getDateRange();
+
+            setIncome(data.projects
+                .filter(p => p.status === 'completed' && p.due_date && new Date(p.due_date) >= from && new Date(p.due_date) <= to)
+                .reduce((acc, p) => acc + (p.budget || 0), 0));
         });
     }, [profile.id]);
 
@@ -63,7 +82,7 @@ export default function DashboardPage() {
                         <h3 className="text-base md:text-lg font-semibold bg-background-secondary">Ingresos del Mes</h3>
                         <DollarSign size={24} className="text-green-acent" />
                     </div>
-                    <p className="mt-4 text-2xl md:text-3xl font-bold text-foreground">$0</p>
+                    <p className="mt-4 text-2xl md:text-3xl font-bold text-foreground">€{income.toLocaleString('es-ES')}</p>
                     {/*<p className="mt-1 text-sm text-foreground-secondary">+15% respecto al mes anterior</p>*/}
                 </div>
 
@@ -85,14 +104,15 @@ export default function DashboardPage() {
                     <p className="mt-1 text-xs md:text-sm text-foreground-secondary">{tasksDueToday >= 1 ? tasksDueToday + " vencen hoy" : ""}</p>
                 </div>
 
-                <div className="rounded-lg bg-background-secondary p-4 md:p-6 shadow-md animate-fade-in-down delay-300">
+                {/* Tarjeta IA como enlace al panel de IA */}
+                <Link href="/dashboard/ai-assistant" className="rounded-lg bg-background-secondary p-4 md:p-6 shadow-md animate-fade-in-down delay-300 block">
                     <div className="flex items-center justify-between">
                         <h3 className="text-base md:text-lg font-semibold text-foreground">Asistente IA</h3>
                         <Sparkles size={24} className="text-purple-500" />
                     </div>
                     <p className="mt-4 text-2xl md:text-3xl font-bold text-foreground">¡Activo!</p>
-                    <p className="mt-1 text-xs md:text-sm text-foreground-secondary">Pregúntale cualquier cosa</p>
-                </div>
+                    <p className="mt-1 text-xs md:text-sm text-foreground-secondary">Habla con la IA</p>
+                </Link>
             </div>
 
             {/* Proyectos en Progreso */}
